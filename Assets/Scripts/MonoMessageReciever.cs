@@ -1,6 +1,7 @@
 using System.Collections;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class MonoMessageReciever : MonoBehaviour
 {
@@ -13,9 +14,9 @@ public class MonoMessageReciever : MonoBehaviour
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
         }
         DataRepo.UIData.UIPanel.gameObject.SetActive(false);
-        while (Mathf.Abs(Camera.main.fieldOfView - 60) > 0.1)
+        while (Mathf.Abs(Camera.main.fieldOfView - 25) > 0.1)
         {
-            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, 60, 0.1f);
+            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, 25, 0.1f);
             yield return null;
         }
 
@@ -64,5 +65,13 @@ public class MonoMessageReciever : MonoBehaviour
             }
         }
 
+    }
+    public void OnRestartClicked()
+    {
+        SceneManager.LoadScene("MainScene");
+    }
+    public void OnHomeClicked()
+    {
+        Application.OpenURL("https://tobi.gg");
     }
 }
