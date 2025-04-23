@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using System;
 using System.Collections.Generic;
 using TMPro;
@@ -9,6 +10,14 @@ public class DataRepo : MonoBehaviour
     public List<PlayerData> Players;
     public UIData UIData;
     public GameData GameData;
+    [NonSerialized]public List<PlatformData> Platforms = new List<PlatformData>();
+
+}
+[Serializable]
+public class PlatformData
+{
+    public Platform platform;
+    [NonSerialized] public bool IsOpen;
 }
 [Serializable]
 public class PlayerData
@@ -41,5 +50,9 @@ public class GameData
     [NonSerialized] public bool ShouldStopGame = false;
     [NonSerialized] public float RemainingTimeInGame;
     [NonSerialized] public int TimeOftheGame = 30;
+
+    public List<Platform> PlatformsPrefab;
+    public List<Transform> PlatformsPosition;
+    public Transform PlatformsParent;
 
 }

@@ -19,6 +19,85 @@ public class SystemFunction
         dataRepo.UIData.ResultPanel.gameObject.SetActive(true);
         dataRepo.UIData.UIPanel.gameObject.SetActive(false);
     }
+    public static void CreateMap(DataRepo dataRepo)
+    {
+        foreach(Transform t in dataRepo.GameData.PlatformsPosition)
+        {
+            int r = Random.Range(0, dataRepo.GameData.PlatformsPrefab.Count);
+            Platform platform
+                = GameObject.Instantiate
+                (dataRepo.GameData.PlatformsPrefab[r],
+                t.position,
+                Quaternion.identity,
+                dataRepo.GameData.PlatformsParent);
+            platform.transform.eulerAngles =new Vector3(-90f, 0f, 0f);
+            dataRepo.Platforms.Add(new PlatformData { platform = platform });
+        }
+    }
+    public static IEnumerator CountDown(DataRepo dataRepo)
+    {
+        while(true)
+        {
+            for (int j = 0; j < dataRepo.Platforms.Count; j++)
+            {
+                for (int i = 0; i < dataRepo.GameData.PlatformsPrefab.Count; i++)
+                {
+                    if (dataRepo.Platforms[j].IsOpen)
+                    {
+                        dataRepo.Platforms[j].IsOpen = false;
+                        Vector3 pos = dataRepo.Platforms[j].platform.transform.position;
+                        GameObject.DestroyImmediate(dataRepo.Platforms[j].platform.gameObject);
+                        int r = Random.Range(0, dataRepo.GameData.PlatformsPrefab.Count);
+                        Platform p
+                            = GameObject.Instantiate
+                            (dataRepo.GameData.PlatformsPrefab[r],
+                            pos,
+                            Quaternion.identity,
+                            dataRepo.GameData.PlatformsParent);
+                        p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+
+                        dataRepo.Platforms[j].platform = p;
+                    }
+                }
+            }
+            for (int j = 0; j < dataRepo.Platforms.Count; j++)
+            {
+                for (int i = 0; i < dataRepo.GameData.PlatformsPrefab.Count; i++)
+                {
+                    if (dataRepo.GameData.PlatformsPrefab[i].NumberOfPrefab == dataRepo.Platforms[j].platform.NumberOfPrefab)
+                    {
+                        if (dataRepo.GameData.PlatformsPrefab[i].NumberOfPrefab >= 2)
+                        {
+                            Vector3 pos = dataRepo.Platforms[j].platform.transform.position;
+                            GameObject.DestroyImmediate(dataRepo.Platforms[j].platform.gameObject);
+                            foreach (Platform platform in dataRepo.GameData.PlatformsPrefab)
+                            {
+                                if (platform.NumberOfPrefab == dataRepo.GameData.PlatformsPrefab[i].NumberOfPrefab - 1)
+                                {
+                                    Platform p = GameObject.Instantiate(platform,
+                                        pos,
+                                        Quaternion.identity,
+                                        dataRepo.GameData.PlatformsParent);
+
+                                    p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+                                    dataRepo.Platforms[j].platform = p;
+                                }
+                            }
+                        }
+                        if (dataRepo.Platforms[j].platform.NumberOfPrefab <= 1)
+                        {
+                            dataRepo.Platforms[j].IsOpen = true;
+                            dataRepo.Platforms[j].platform.Animator.SetBool("Open", dataRepo.Platforms[j].IsOpen);
+
+                        }
+                    }
+                    
+                }
+            }
+            yield return new WaitForSeconds(1);
+        }
+
+    }
     public static void OnPlayerCollisionStay(Player player, Collision collision, DataRepo dataRepo)
     {
         Player otherPlayer = null;

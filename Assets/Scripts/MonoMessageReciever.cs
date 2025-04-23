@@ -9,6 +9,7 @@ public class MonoMessageReciever : MonoBehaviour
     bool start;
     IEnumerator Start()
     {
+        SystemFunction.CreateMap(DataRepo);
         foreach (PlayerData p in DataRepo.Players)
         {
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
@@ -48,6 +49,7 @@ public class MonoMessageReciever : MonoBehaviour
         DataRepo.UIData.UIPanel.gameObject.SetActive(true);
         start = true;
         StartCoroutine(SystemFunction.StartTimerOftheGame(DataRepo));
+        StartCoroutine(SystemFunction.CountDown(DataRepo));
     }
     private void FixedUpdate()
     {
