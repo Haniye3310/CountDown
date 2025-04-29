@@ -132,6 +132,10 @@ public class SystemFunction
                 ApplyPush(-pushDirection, Mathf.Abs(strengthDifference), playerData);
             }
         }
+        if (collision.gameObject.tag == "Ground")
+        {
+            playerData.IsGrounded = true;
+        }
     }
     public static void OnPlayerCollisionExit(Player player, Collision collision, DataRepo dataRepo)
     {
