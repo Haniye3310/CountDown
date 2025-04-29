@@ -49,6 +49,13 @@ public class MonoMessageReciever : MonoBehaviour
         DataRepo.UIData.UIPanel.gameObject.SetActive(true);
         start = true;
         StartCoroutine(SystemFunction.StartTimerOftheGame(DataRepo));
+        for (int i = 0; i < DataRepo.Players.Count; i++)
+        {
+            if (!DataRepo.Players[i].IsMainPlayer)
+            {
+                StartCoroutine(SystemFunction.StartRobot(DataRepo.Players[i], DataRepo));
+            }
+        }
         StartCoroutine(SystemFunction.CountDown(DataRepo));
     }
     private void FixedUpdate()
@@ -76,4 +83,5 @@ public class MonoMessageReciever : MonoBehaviour
     {
         Application.OpenURL("https://tobi.gg");
     }
+    
 }

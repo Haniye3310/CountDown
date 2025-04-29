@@ -30,6 +30,7 @@ public class PlayerData
     [NonSerialized] public bool IsGrounded = true;
     [NonSerialized] public bool ShouldJump;
     [NonSerialized] public Vector3 PushForce;
+    [NonSerialized] public Vector3 TargetMovement;
 }
 [Serializable]
 public class UIData
@@ -54,5 +55,6 @@ public class GameData
     public List<Platform> PlatformsPrefab;
     public List<Transform> PlatformsPosition;
     public Transform PlatformsParent;
+    public Transform GroundTrigger;
 
 }
