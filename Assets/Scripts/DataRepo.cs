@@ -23,12 +23,15 @@ public class PlatformData
 public class PlayerData
 {
     public Player Player;
+    public GameObject Visual;
     public bool IsMainPlayer;
     public Animator PlayerAnimator;
     public Rigidbody PlayerRigidbody;
     public float Strength;
+    [NonSerialized] public bool IsFrozen;
     [NonSerialized] public bool IsGrounded = true;
     [NonSerialized] public bool ShouldJump;
+    [NonSerialized]public bool ShouldPunch;
     [NonSerialized] public Vector3 PushForce;
     [NonSerialized] public Vector3 TargetMovement;
 }

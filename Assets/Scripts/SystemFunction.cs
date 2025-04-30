@@ -46,28 +46,30 @@ public class SystemFunction
         }
 
         //increase number of 3second tiles if they are less than 3
-        while (GetNumberOfTileInMap(3, dataRepo) < 2)
-        {
-            foreach (PlatformData pl in dataRepo.Platforms)
-            {
-                if (pl.platform.SecondOfPrefab != 3)
-                {
-                    Vector3 pos = pl.platform.transform.position;
-                    GameObject.DestroyImmediate(pl.platform.gameObject);
-                    int r = 2;
-                    Platform p
-                        = GameObject.Instantiate
-                        (dataRepo.GameData.PlatformsPrefab[r],
-                        pos,
-                        Quaternion.identity,
-                        dataRepo.GameData.PlatformsParent);
-                    p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
 
-                    pl.platform = p;
-                }
+        foreach (PlatformData pl in dataRepo.Platforms)
+        {
+            if (pl.platform.SecondOfPrefab != 3)
+            {
+                Vector3 pos = pl.platform.transform.position;
+                GameObject.DestroyImmediate(pl.platform.gameObject);
+                int r = 2;
+                Platform p
+                    = GameObject.Instantiate
+                    (dataRepo.GameData.PlatformsPrefab[r],
+                    pos,
+                    Quaternion.identity,
+                    dataRepo.GameData.PlatformsParent);
+                p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+
+                pl.platform = p;
             }
+            if (GetNumberOfTileInMap(3, dataRepo) >= 2)
+                break;
 
         }
+
+
 
     }
     public static int GetNumberOfTileInMap(int SecondOfTile,DataRepo dataRepo)
@@ -246,7 +248,7 @@ public class SystemFunction
             playerData.PlayerAnimator.SetFloat("MoveSpeed", 1);
         }
     }
-    public static void FixedUpdate(DataRepo dataRepo)
+    public static void FixedUpdate(MonoBehaviour mono,DataRepo dataRepo)
     {
         float v = dataRepo.UIData.Joystick.Vertical;
         float h = dataRepo.UIData.Joystick.Horizontal;
@@ -263,6 +265,11 @@ public class SystemFunction
             if (p.ShouldJump)
             {
                 Jump(dataRepo, p);
+            }
+            if (p.ShouldPunch)
+            {
+                AttemptPunch(mono,dataRepo, p);
+                p.ShouldPunch = false;
             }
 
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
@@ -288,6 +295,73 @@ public class SystemFunction
             }
         }
     }
+    public static IEnumerator FreezePlayer(PlayerData playerData)
+    {
+
+        playerData.IsFrozen = true;
+        float EndTimer = Time.time + 3;
+        float interval = Time.time + 0.1f;
+
+        while (true)
+        {
+            if (Time.time > EndTimer)
+            {
+                playerData.Visual.gameObject.SetActive(false);
+                break;
+            }
+            if (Time.time > interval)
+            {
+                playerData.Visual.gameObject.SetActive(!playerData.Visual.gameObject.activeSelf);
+                interval = Time.time + 0.1f;
+            }
+            yield return null;
+        }
+        playerData.Visual.gameObject.SetActive(true);
+        playerData.IsFrozen = false;
+    }
+    public static void AttemptPunch(MonoBehaviour mono,DataRepo dataRepo, PlayerData playerData)
+    {
+        Vector3 punchOrigin = playerData.Player.transform.position;
+        Vector3 punchDirection = playerData.Player.transform.forward;
+
+        float punchRange = 0.5f;
+        float punchRadius = 0.5f;
+        float maxAngle = 180f; // only punch if within 45 degrees in front
+        playerData.PlayerAnimator.SetTrigger("Attack");
+        RaycastHit[] hits = Physics.SphereCastAll(punchOrigin, punchRadius, punchDirection, punchRange);
+
+        foreach (RaycastHit hit in hits)
+        {
+            Player enemyPlayer = hit.collider.GetComponent<Player>();
+            if (enemyPlayer != null && enemyPlayer != playerData.Player)
+            {
+                PlayerData enemyData = dataRepo.Players.Find(p => p.Player == enemyPlayer);
+                if (enemyData != null)
+                {
+                    Vector3 toEnemy = (enemyPlayer.transform.position - punchOrigin).normalized;
+                    float angle = Vector3.Angle(punchDirection, toEnemy);
+
+                    if (angle <= maxAngle) // Enemy is within punch cone
+                    {
+                        if (enemyData.IsFrozen) return;
+                        Vector3 pushDir = toEnemy;
+                        ApplyPush(pushDir, 50f, enemyData);
+                        enemyData.PlayerAnimator.SetTrigger("GetHit");
+                        mono.StartCoroutine(FreezePlayer(enemyData));
+                    }
+                }
+            }
+        }
+
+
+    }
+
+    public static void OnPunchClicked(DataRepo dataRepo, PlayerData playerData)
+    {
+        playerData.ShouldPunch = true;
+    }
+
+
     public static void Jump(DataRepo dataRepo, PlayerData playerData)
     {
 

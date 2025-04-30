@@ -56,12 +56,12 @@ public class MonoMessageReciever : MonoBehaviour
                 StartCoroutine(SystemFunction.StartRobot(DataRepo.Players[i], DataRepo));
             }
         }
-        StartCoroutine(SystemFunction.CountDown(DataRepo));
+        //StartCoroutine(SystemFunction.CountDown(DataRepo));
     }
     private void FixedUpdate()
     {
         if (start)
-            SystemFunction.FixedUpdate(DataRepo);
+            SystemFunction.FixedUpdate(this,DataRepo);
     }
     public void OnJumpClicked()
     {
@@ -74,6 +74,17 @@ public class MonoMessageReciever : MonoBehaviour
             }
         }
 
+    }
+    public void OnPunchClicked()
+    {
+        foreach (PlayerData playerData in DataRepo.Players)
+        {
+            if (playerData.IsMainPlayer)
+            {
+                SystemFunction.OnPunchClicked(DataRepo, playerData);
+
+            }
+        }
     }
     public void OnRestartClicked()
     {
