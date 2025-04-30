@@ -4,5 +4,5 @@ using UnityEngine;
 public class Platform : MonoBehaviour
 {
     public Animator Animator;
-    public int NumberOfPrefab;
+    public int SecondOfPrefab;
 }

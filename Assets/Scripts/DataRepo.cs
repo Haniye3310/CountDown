@@ -53,6 +53,7 @@ public class GameData
     [NonSerialized] public int TimeOftheGame = 30;
 
     public List<Platform> PlatformsPrefab;
+    public List<int> PlatformsNumberAtFirst;
     public List<Transform> PlatformsPosition;
     public Transform PlatformsParent;
     public Transform GroundTrigger;

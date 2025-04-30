@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Animator: {fileID: 8419189188239492475}
-  NumberOfPrefab: 4
+  SecondOfPrefab: 4
 --- !u!95 &8419189188239492475 stripped
 Animator:
   m_CorrespondingSourceObject: {fileID: 7985294016396243928, guid: cbaa5bc4fb5f71f46b29deb430f1745c, type: 3}
