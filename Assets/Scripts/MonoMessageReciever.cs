@@ -56,7 +56,7 @@ public class MonoMessageReciever : MonoBehaviour
                 StartCoroutine(SystemFunction.StartRobot(DataRepo.Players[i], DataRepo));
             }
         }
-        //StartCoroutine(SystemFunction.CountDown(DataRepo));
+        StartCoroutine(SystemFunction.CountDown(DataRepo));
     }
     private void FixedUpdate()
     {
