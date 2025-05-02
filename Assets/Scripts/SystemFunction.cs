@@ -53,7 +53,7 @@ public class SystemFunction
             {
                 Vector3 pos = pl.platform.transform.position;
                 GameObject.DestroyImmediate(pl.platform.gameObject);
-                int r = 2;
+                int r = 3;
                 Platform p
                     = GameObject.Instantiate
                     (dataRepo.GameData.PlatformsPrefab[r],
@@ -126,7 +126,7 @@ public class SystemFunction
                 {
                     if (dataRepo.GameData.PlatformsPrefab[i].SecondOfPrefab == dataRepo.Platforms[j].platform.SecondOfPrefab)
                     {
-                        if (dataRepo.GameData.PlatformsPrefab[i].SecondOfPrefab >= 2)
+                        if (dataRepo.GameData.PlatformsPrefab[i].SecondOfPrefab >= 1)
                         {
                             Vector3 pos = dataRepo.Platforms[j].platform.transform.position;
                             GameObject.DestroyImmediate(dataRepo.Platforms[j].platform.gameObject);
@@ -144,7 +144,7 @@ public class SystemFunction
                                 }
                             }
                         }
-                        if (dataRepo.Platforms[j].platform.SecondOfPrefab <= 1)
+                        if (dataRepo.Platforms[j].platform.SecondOfPrefab < 1)
                         {
                             dataRepo.Platforms[j].IsOpen = true;
                             dataRepo.Platforms[j].platform.Animator.SetBool("Open", dataRepo.Platforms[j].IsOpen);
