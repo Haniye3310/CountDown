@@ -46,30 +46,30 @@ public class SystemFunction
         }
 
         //increase number of 3second tiles if they are less than 3
-
-        foreach (PlatformData pl in dataRepo.Platforms)
+        if (GetNumberOfTileInMap(3, dataRepo) < 2) 
         {
-            if (pl.platform.SecondOfPrefab != 3)
+            foreach (PlatformData pl in dataRepo.Platforms)
             {
-                Vector3 pos = pl.platform.transform.position;
-                GameObject.DestroyImmediate(pl.platform.gameObject);
-                int r = 3;
-                Platform p
-                    = GameObject.Instantiate
-                    (dataRepo.GameData.PlatformsPrefab[r],
-                    pos,
-                    Quaternion.identity,
-                    dataRepo.GameData.PlatformsParent);
-                p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+                if (pl.platform.SecondOfPrefab != 3)
+                {
+                    Vector3 pos = pl.platform.transform.position;
+                    GameObject.DestroyImmediate(pl.platform.gameObject);
+                    int r = 3;
+                    Platform p
+                        = GameObject.Instantiate
+                        (dataRepo.GameData.PlatformsPrefab[r],
+                        pos,
+                        Quaternion.identity,
+                        dataRepo.GameData.PlatformsParent);
+                    p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
 
-                pl.platform = p;
+                    pl.platform = p;
+                }
+                if (GetNumberOfTileInMap(3, dataRepo) >= 2)
+                    break;
+
             }
-            if (GetNumberOfTileInMap(3, dataRepo) >= 2)
-                break;
-
         }
-
-
 
     }
     public static int GetNumberOfTileInMap(int SecondOfTile,DataRepo dataRepo)
@@ -86,39 +86,9 @@ public class SystemFunction
     }
     public static IEnumerator CountDown(DataRepo dataRepo)
     {
-        while(true)
+        while (true)
         {
 
-            // Deletes the open platform and replaces them
-            for (int j = 0; j < dataRepo.Platforms.Count; j++)
-            {
-                for (int i = 0; i < dataRepo.GameData.PlatformsPrefab.Count; i++)
-                {
-                    if (dataRepo.Platforms[j].IsOpen)
-                    {
-                        dataRepo.Platforms[j].IsOpen = false;
-                        Vector3 pos = dataRepo.Platforms[j].platform.transform.position;
-                        GameObject.DestroyImmediate(dataRepo.Platforms[j].platform.gameObject);
-                        int r = Random.Range(0, dataRepo.GameData.PlatformsPrefab.Count);
-                        while (GetNumberOfTileInMap(dataRepo.GameData.PlatformsPrefab[r].SecondOfPrefab,dataRepo) >= 3) 
-                        {
-                            r++;
-                            if (r == dataRepo.GameData.PlatformsPrefab.Count)
-                                r = 0;
-
-                        }
-                        Platform p
-                            = GameObject.Instantiate
-                            (dataRepo.GameData.PlatformsPrefab[r],
-                            pos,
-                            Quaternion.identity,
-                            dataRepo.GameData.PlatformsParent);
-                        p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
-
-                        dataRepo.Platforms[j].platform = p;
-                    }
-                }
-            }
             //Counts down the tiles
             for (int j = 0; j < dataRepo.Platforms.Count; j++)
             {
@@ -144,6 +114,49 @@ public class SystemFunction
                                 }
                             }
                         }
+                    }
+
+                }
+            }
+            // Deletes the open platform and replaces them
+            for (int j = 0; j < dataRepo.Platforms.Count; j++)
+            {
+                for (int i = 0; i < dataRepo.GameData.PlatformsPrefab.Count; i++)
+                {
+                    if (dataRepo.Platforms[j].IsOpen)
+                    {
+                        dataRepo.Platforms[j].IsOpen = false;
+                        Vector3 pos = dataRepo.Platforms[j].platform.transform.position;
+                        GameObject.DestroyImmediate(dataRepo.Platforms[j].platform.gameObject);
+                        int r = Random.Range(0, dataRepo.GameData.PlatformsPrefab.Count);
+                        while (GetNumberOfTileInMap(dataRepo.GameData.PlatformsPrefab[r].SecondOfPrefab, dataRepo) >= 3)
+                        {
+                            r++;
+                            if (r == dataRepo.GameData.PlatformsPrefab.Count)
+                                r = 0;
+
+                        }
+                        Platform p
+                            = GameObject.Instantiate
+                            (dataRepo.GameData.PlatformsPrefab[r],
+                            pos,
+                            Quaternion.identity,
+                            dataRepo.GameData.PlatformsParent);
+                        p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
+
+                        dataRepo.Platforms[j].platform = p;
+                    }
+                }
+            }
+
+
+            //Opens the tiles less than 1
+            for (int j = 0; j < dataRepo.Platforms.Count; j++)
+            {
+                for (int i = 0; i < dataRepo.GameData.PlatformsPrefab.Count; i++)
+                {
+                    if (dataRepo.GameData.PlatformsPrefab[i].SecondOfPrefab == dataRepo.Platforms[j].platform.SecondOfPrefab)
+                    {
                         if (dataRepo.Platforms[j].platform.SecondOfPrefab < 1)
                         {
                             dataRepo.Platforms[j].IsOpen = true;
@@ -151,7 +164,7 @@ public class SystemFunction
 
                         }
                     }
-                    
+
                 }
             }
             yield return new WaitForSeconds(1);
