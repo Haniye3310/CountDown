@@ -173,7 +173,15 @@ public class SystemFunction
 
                 }
             }
-            yield return new WaitForSeconds(1);
+
+            float timeToWait = 0;
+            if ((int)dataRepo.GameData.RemainingTimeInGame >= 20) timeToWait = 1.3f;
+
+            if ((int)dataRepo.GameData.RemainingTimeInGame > 10
+                && (int)dataRepo.GameData.RemainingTimeInGame < 20) timeToWait = 1f;
+
+            if ((int)dataRepo.GameData.RemainingTimeInGame <= 10) timeToWait = 0.7f;
+            yield return new WaitForSeconds(timeToWait);
         }
 
     }
