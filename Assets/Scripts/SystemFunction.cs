@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static DataRepo;
@@ -16,6 +17,9 @@ public class SystemFunction
             dataRepo.GameData.RemainingTimeInGame -= Time.deltaTime;
 
             dataRepo.UIData.RemainingTimeText.text = ((int)dataRepo.GameData.RemainingTimeInGame).ToString();
+            if (ShouldFinishGame(dataRepo))
+                break;
+
             yield return null;
         }
         dataRepo.GameData.ShouldStopGame = true;
@@ -24,7 +28,19 @@ public class SystemFunction
     }
     public static bool ShouldFinishGame(DataRepo dataRepo)
     {
-        
+        int NumberOfEleminited = 0;
+        foreach(PlayerData playerData in dataRepo.Players)
+        {
+            if (playerData.IsOutfGround||
+                playerData.Player.transform.position.y <dataRepo.GameData.GroundTrigger.position.y)
+            {
+                NumberOfEleminited++;
+            }
+        }
+        if(NumberOfEleminited == 4)
+        {
+            return true;
+        }
         return false;
     }
     public static void CreateMap(DataRepo dataRepo)
