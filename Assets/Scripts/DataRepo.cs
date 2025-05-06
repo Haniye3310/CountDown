@@ -34,6 +34,7 @@ public class PlayerData
     [NonSerialized]public bool ShouldPunch;
     [NonSerialized] public Vector3 PushForce;
     [NonSerialized] public Vector3 TargetMovement;
+    [NonSerialized] public bool IsOutfGround = false;
 }
 [Serializable]
 public class UIData
@@ -60,5 +61,6 @@ public class GameData
     public List<Transform> PlatformsPosition;
     public Transform PlatformsParent;
     public Transform GroundTrigger;
+    [NonSerialized] public float GroundRadius;
 
 }

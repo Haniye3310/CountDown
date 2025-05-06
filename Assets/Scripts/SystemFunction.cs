@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using static DataRepo;
@@ -20,6 +21,11 @@ public class SystemFunction
         dataRepo.GameData.ShouldStopGame = true;
         dataRepo.UIData.ResultPanel.gameObject.SetActive(true);
         dataRepo.UIData.UIPanel.gameObject.SetActive(false);
+    }
+    public static bool ShouldFinishGame(DataRepo dataRepo)
+    {
+        
+        return false;
     }
     public static void CreateMap(DataRepo dataRepo)
     {
@@ -226,15 +232,22 @@ public class SystemFunction
     }
     public static void OnPlayerCollisionEnter(MonoBehaviour mono, Player player, Collision collision, DataRepo dataRepo)
     {
+       
         PlayerData playerData = null;
         foreach (PlayerData p in dataRepo.Players)
         {
             if (p.Player == player)
             {
                 playerData = p;
+                
             }
         }
-
+        if (collision.gameObject.CompareTag("OutOfGround"))
+        {
+            playerData.IsOutfGround = true;
+            Vector3 bounceDir = Vector3.up;
+            playerData.PlayerRigidbody.AddForce(bounceDir * 2f, ForceMode.Impulse);
+        }
         if (collision.gameObject.tag == "Ground")
         {
             playerData.IsGrounded = true;
@@ -242,6 +255,7 @@ public class SystemFunction
     }
     public static void Move(DataRepo dataRepo, PlayerData playerData, Vector3 direction)
     {
+        if (playerData.IsOutfGround)return;
         direction = direction.normalized;
         direction.y = 0;
         if (direction != Vector3.zero)
@@ -284,7 +298,8 @@ public class SystemFunction
                 AttemptPunch(mono,dataRepo, p);
                 p.ShouldPunch = false;
             }
-
+            if(p.IsOutfGround)
+                p.PlayerRigidbody.AddForce(p.Player.transform.forward * 60, ForceMode.Force);
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
         }
         foreach (PlayerData p in dataRepo.Players)

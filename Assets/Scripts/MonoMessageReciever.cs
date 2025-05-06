@@ -44,7 +44,8 @@ public class MonoMessageReciever : MonoBehaviour
                 DataRepo.UIData.GoImage.gameObject.SetActive(true);
             }
             yield return null;
-        }
+        };
+        DataRepo.GameData.GroundRadius = DataRepo.GameData.GroundTrigger.localScale.x / 2;
         DataRepo.UIData.GoImage.gameObject.SetActive(false);
         DataRepo.UIData.UIPanel.gameObject.SetActive(true);
         start = true;
