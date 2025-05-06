@@ -317,6 +317,13 @@ public class SystemFunction
             {
                 Jump(dataRepo, p);
             }
+            // Clamp vertical velocity to prevent buildup
+            Vector3 vel = p.PlayerRigidbody.linearVelocity;
+            if (vel.y > 5f) // or whatever jump limit you want
+            {
+                vel.y = 5f;
+                p.PlayerRigidbody.linearVelocity = vel;
+            }
             if (p.ShouldPunch)
             {
                 AttemptPunch(mono,dataRepo, p);
