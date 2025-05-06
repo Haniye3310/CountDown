@@ -330,7 +330,9 @@ public class SystemFunction
                 p.ShouldPunch = false;
             }
             if(p.IsOutfGround)
-                p.PlayerRigidbody.AddForce(p.Player.transform.forward * 60, ForceMode.Force);
+                p.PlayerRigidbody.AddForce
+                    ((p.Player.transform.position - dataRepo.GameData.GroundTrigger.position).normalized  * 60,
+                    ForceMode.Force);
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
         }
         foreach (PlayerData p in dataRepo.Players)
