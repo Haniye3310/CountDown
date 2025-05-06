@@ -426,14 +426,14 @@ public class SystemFunction
 
         if (playerData.IsGrounded)
         {
-            playerData.PlayerRigidbody.AddForce(Vector3.up * 5, ForceMode.Impulse);
+            playerData.PlayerRigidbody.AddForce(Vector3.up * 4, ForceMode.Impulse);
             playerData.ShouldJump = false;
-
         }
     }
     public static void OnJumpClicked(DataRepo dataRepo, PlayerData playerData)
     {
         playerData.ShouldJump = true;
+
     }
     public static void ApplyPush(Vector3 pushDirection, float forceAmount, PlayerData playerData)
     {
