@@ -134,12 +134,12 @@ public class SystemFunction
                         dataRepo.Platforms[j].IsOpen = false;
                         Vector3 pos = dataRepo.Platforms[j].platform.transform.position;
                         GameObject.DestroyImmediate(dataRepo.Platforms[j].platform.gameObject);
-                        int r = Random.Range(0, dataRepo.GameData.PlatformsPrefab.Count);
+                        int r = Random.Range(2, dataRepo.GameData.PlatformsPrefab.Count);
                         while (GetNumberOfTileInMap(dataRepo.GameData.PlatformsPrefab[r].SecondOfPrefab, dataRepo) >= 3)
                         {
                             r++;
                             if (r == dataRepo.GameData.PlatformsPrefab.Count)
-                                r = 0;
+                                r = 2;
 
                         }
                         Platform p
