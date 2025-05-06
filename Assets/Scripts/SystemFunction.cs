@@ -404,7 +404,7 @@ public class SystemFunction
                     {
                         if (enemyData.IsFrozen) return;
                         Vector3 pushDir = toEnemy;
-                        ApplyPush(pushDir, 50f, enemyData);
+                        ApplyPush(pushDir, 30f, enemyData);
                         enemyData.PlayerAnimator.SetTrigger("GetHit");
                         mono.StartCoroutine(FreezePlayer(enemyData));
                     }
@@ -417,7 +417,10 @@ public class SystemFunction
 
     public static void OnPunchClicked(DataRepo dataRepo, PlayerData playerData)
     {
-        playerData.ShouldPunch = true;
+        if (playerData.IsGrounded)
+        {
+            playerData.ShouldPunch = true;
+        }
     }
 
 
