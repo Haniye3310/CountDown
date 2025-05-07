@@ -12,6 +12,10 @@ PrefabInstance:
       propertyPath: m_TagString
       value: Ground
       objectReference: {fileID: 0}
+    - target: {fileID: 8215986234231644985, guid: cbaa5bc4fb5f71f46b29deb430f1745c, type: 3}
+      propertyPath: m_Size.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8234896511677944347, guid: cbaa5bc4fb5f71f46b29deb430f1745c, type: 3}
       propertyPath: m_Name
       value: Platform Variant 9

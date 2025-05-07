@@ -317,13 +317,22 @@ public class SystemFunction
             {
                 Jump(dataRepo, p);
             }
+            // Clamp vertical velocity to prevent buildup
+            Vector3 vel = p.PlayerRigidbody.linearVelocity;
+            if (vel.y > 5f) // or whatever jump limit you want
+            {
+                vel.y = 5f;
+                p.PlayerRigidbody.linearVelocity = vel;
+            }
             if (p.ShouldPunch)
             {
                 AttemptPunch(mono,dataRepo, p);
                 p.ShouldPunch = false;
             }
             if(p.IsOutfGround)
-                p.PlayerRigidbody.AddForce(p.Player.transform.forward * 60, ForceMode.Force);
+                p.PlayerRigidbody.AddForce
+                    ((p.Player.transform.position - dataRepo.GameData.GroundTrigger.position).normalized  * 60,
+                    ForceMode.Force);
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
         }
         foreach (PlayerData p in dataRepo.Players)
@@ -397,7 +406,7 @@ public class SystemFunction
                     {
                         if (enemyData.IsFrozen) return;
                         Vector3 pushDir = toEnemy;
-                        ApplyPush(pushDir, 50f, enemyData);
+                        ApplyPush(pushDir, 30f, enemyData);
                         enemyData.PlayerAnimator.SetTrigger("GetHit");
                         mono.StartCoroutine(FreezePlayer(enemyData));
                     }
@@ -410,7 +419,10 @@ public class SystemFunction
 
     public static void OnPunchClicked(DataRepo dataRepo, PlayerData playerData)
     {
-        playerData.ShouldPunch = true;
+        if (playerData.IsGrounded)
+        {
+            playerData.ShouldPunch = true;
+        }
     }
 
 
@@ -419,14 +431,14 @@ public class SystemFunction
 
         if (playerData.IsGrounded)
         {
-            playerData.PlayerRigidbody.AddForce(Vector3.up * 5, ForceMode.Impulse);
+            playerData.PlayerRigidbody.AddForce(Vector3.up * 4, ForceMode.Impulse);
             playerData.ShouldJump = false;
-
         }
     }
     public static void OnJumpClicked(DataRepo dataRepo, PlayerData playerData)
     {
         playerData.ShouldJump = true;
+
     }
     public static void ApplyPush(Vector3 pushDirection, float forceAmount, PlayerData playerData)
     {
