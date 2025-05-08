@@ -4340,24 +4340,28 @@ MonoBehaviour:
   - Player: {fileID: 1964318883}
     Visual: {fileID: 1406380141}
     IsMainPlayer: 1
+    IsTestPlayer: 0
     PlayerAnimator: {fileID: 603414906676187487}
     PlayerRigidbody: {fileID: 1964318884}
     Strength: 20
   - Player: {fileID: 246945506}
     Visual: {fileID: 503525874}
     IsMainPlayer: 0
+    IsTestPlayer: 1
     PlayerAnimator: {fileID: 730203190247229413}
     PlayerRigidbody: {fileID: 246945507}
     Strength: 10
   - Player: {fileID: 1920420985}
     Visual: {fileID: 980705920}
     IsMainPlayer: 0
+    IsTestPlayer: 0
     PlayerAnimator: {fileID: 7695261887986710720}
     PlayerRigidbody: {fileID: 1920420986}
     Strength: 0
   - Player: {fileID: 2124323571}
     Visual: {fileID: 708734887}
     IsMainPlayer: 0
+    IsTestPlayer: 0
     PlayerAnimator: {fileID: 4012830676434062382}
     PlayerRigidbody: {fileID: 2124323572}
     Strength: 0

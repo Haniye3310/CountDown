@@ -13,6 +13,16 @@ public class DataRepo : MonoBehaviour
     [NonSerialized]public List<PlatformData> Platforms = new List<PlatformData>();
 
 }
+public enum BotActionType { Move, Attack, Dodge, Idle }
+
+public class BotAction
+{
+    public BotActionType ActionType;
+    public float Score;
+    public Vector3 TargetPosition;
+    public PlayerData TargetEnemy;
+}
+
 [Serializable]
 public class PlatformData
 {
@@ -35,6 +45,7 @@ public class PlayerData
     [NonSerialized] public Vector3 PushForce;
     [NonSerialized] public Vector3 TargetMovement;
     [NonSerialized] public bool IsOutfGround = false;
+    [NonSerialized] public Platform CurrentPlatform;
 }
 [Serializable]
 public class UIData

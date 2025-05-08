@@ -1,11 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using static DataRepo;
 
 public class SystemFunction
 {
@@ -238,6 +234,7 @@ public class SystemFunction
         if (collision.gameObject.tag == "Ground")
         {
             playerData.IsGrounded = true;
+            playerData.CurrentPlatform = collision.gameObject.GetComponentInParent<Platform>();
         }
     }
     public static void OnPlayerCollisionExit(Player player, Collision collision, DataRepo dataRepo)
@@ -275,6 +272,7 @@ public class SystemFunction
         if (collision.gameObject.tag == "Ground")
         {
             playerData.IsGrounded = true;
+            playerData.CurrentPlatform = collision.gameObject.GetComponentInParent<Platform>();
         }
     }
     public static void Move(DataRepo dataRepo, PlayerData playerData, Vector3 direction)
@@ -444,63 +442,67 @@ public class SystemFunction
     {
         playerData.PushForce = pushDirection * forceAmount * 5;
     }
-    public void OnRestartClicked()
+    public static List<PlayerData> GetNearbyEnemies(DataRepo dataRepo,PlayerData playerData)
     {
-        SceneManager.LoadScene("FinalSceneWithBothArtAndLogic");
+        List<PlayerData> nearbyEnemies = new List<PlayerData>();
+        foreach(PlayerData p in dataRepo.Players)
+        {
+            if(p!= playerData)
+            {
+                if (Vector3.Distance(p.Player.transform.position, playerData.Player.transform.position) < 1f)
+                    nearbyEnemies.Add(p);
+            }
+        }
+        return nearbyEnemies;
     }
-    public void OnHomeClicked()
+    public static bool ThreatDetected(DataRepo dataRepo,PlayerData playerData)
     {
-        Application.OpenURL("https://tobi.gg");
+        if(GetNearbyEnemies(dataRepo, playerData).Count>0)
+            return true;
+        return false;
+    }
+    public static BotAction EvaluateBestAction(PlayerData playerData, DataRepo dataRepo)
+    {
+        List<BotAction> actions = new List<BotAction>();
+
+        foreach (PlatformData platform in dataRepo.Platforms)
+        {
+            float score = platform.platform.SecondOfPrefab - Vector3.Distance(playerData.Player.transform.position, platform.platform.gameObject.transform.position) * 0.5f;
+            actions.Add(new BotAction { ActionType = BotActionType.Move, Score = score, TargetPosition = platform.platform.gameObject.transform.position });
+        }
+
+        foreach (PlayerData enemy in GetNearbyEnemies(dataRepo, playerData))
+        {
+            float score = (10 - enemy.CurrentPlatform.SecondOfPrefab) * 2f;
+            actions.Add(new BotAction { ActionType = BotActionType.Attack, Score = score, TargetEnemy = enemy });
+        }
+
+        if (ThreatDetected(dataRepo, playerData))
+        {
+            float score = 10f / playerData.CurrentPlatform.SecondOfPrefab;
+            actions.Add(new BotAction { ActionType = BotActionType.Dodge, Score = score });
+        }
+
+        return actions.OrderByDescending(a => a.Score).First();
     }
     public static IEnumerator StartRobot(PlayerData playerData, DataRepo dataRepo)
     {
         while (true)
         {
-            if (playerData.TargetMovement == Vector3.zero)
+            BotAction botAction= EvaluateBestAction(playerData, dataRepo);
+            if(botAction.ActionType == BotActionType.Move)
             {
-                playerData.TargetMovement = GetRandomPositionOnGround(dataRepo, playerData);
-
+                playerData.TargetMovement = botAction.TargetPosition;
             }
-            if
-            (
-            Vector3.Distance
-                            (
-                                playerData.TargetMovement,
-                                new Vector3
-                                        (
-                                        playerData.Player.transform.position.x,
-                                        dataRepo.GameData.GroundTrigger.position.y + (dataRepo.GameData.GroundTrigger.localScale.y),
-                                        playerData.Player.transform.position.z
-                                        )
-                            )
-            < 0.3f
-            )
+            if(botAction.ActionType == BotActionType.Attack)
             {
-                playerData.TargetMovement = Vector3.zero;
-
+                OnPunchClicked(dataRepo, playerData);
+            }
+            if(botAction.ActionType == BotActionType.Dodge)
+            {
+                OnJumpClicked(dataRepo, playerData);
             }
             yield return null;
         }
-    }
-    public static Vector3 GetRandomPositionOnGround(DataRepo dataRepo, PlayerData playerData)
-    {
-        // Calculate the effective radius of the ground
-        float radius = dataRepo.GameData.GroundTrigger.localScale.x * 0.3f;
-
-        // Generate a random angle in radians
-        float angle = Random.Range(0f, Mathf.PI * 2);
-
-        // Calculate x and z coordinates relative to the center of the ground
-        float x = Mathf.Cos(angle) * radius;
-        float z = Mathf.Sin(angle) * radius;
-
-        // Adjust the position to be relative to the ground's actual position
-        float adjustedY = dataRepo.GameData.GroundTrigger.position.y + (dataRepo.GameData.GroundTrigger.localScale.y); // Top surface of the ground
-
-        return new Vector3(
-            x + dataRepo.GameData.GroundTrigger.position.x, // Adjust x based on the ground's center position
-            adjustedY, // Set Y to the ground's top surface
-            z + dataRepo.GameData.GroundTrigger.position.z  // Adjust z based on the ground's center position
-        );
     }
 }
