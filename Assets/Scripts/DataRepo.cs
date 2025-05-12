@@ -28,6 +28,7 @@ public class PlatformData
 {
     public Platform platform;
     [NonSerialized] public bool IsOpen;
+    [NonSerialized] public bool IsInAnimatorOpen;
 }
 [Serializable]
 public class PlayerData

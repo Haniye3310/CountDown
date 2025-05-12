@@ -198,6 +198,26 @@ public class SystemFunction
         }
 
     }
+    public static void OnAnimatorOpenEvent(DataRepo dataRepo,Platform platform)
+    {
+        foreach(PlatformData p in dataRepo.Platforms)
+        {
+            if(p.platform == platform)
+            {
+                p.IsInAnimatorOpen = true;
+            }
+        }
+    }
+    public static void OnAnimatorCloseEvent(DataRepo dataRepo, Platform platform)
+    {
+        foreach (PlatformData p in dataRepo.Platforms)
+        {
+            if (p.platform == platform)
+            {
+                p.IsInAnimatorOpen = false;
+            }
+        }
+    }
     public static void OnPlayerCollisionStay(Player player, Collision collision, DataRepo dataRepo)
     {
         Player otherPlayer = null;
@@ -236,6 +256,16 @@ public class SystemFunction
         {
             playerData.IsGrounded = true;
             playerData.CurrentPlatform = collision.gameObject.GetComponentInParent<Platform>();
+            foreach (PlatformData platformData in dataRepo.Platforms)
+            {
+                if (platformData.platform == playerData.CurrentPlatform)
+                {
+                    if (platformData.IsInAnimatorOpen)
+                    {
+                        playerData.Player.GetComponent<CapsuleCollider>().isTrigger = true;
+                    }
+                }
+            }
         }
     }
     public static void OnPlayerCollisionExit(Player player, Collision collision, DataRepo dataRepo)
@@ -274,6 +304,16 @@ public class SystemFunction
         {
             playerData.IsGrounded = true;
             playerData.CurrentPlatform = collision.gameObject.GetComponentInParent<Platform>();
+            foreach(PlatformData platformData in dataRepo.Platforms)
+            {
+                if(platformData.platform == playerData.CurrentPlatform)
+                {
+                    if (platformData.IsInAnimatorOpen)
+                    {
+                        playerData.Player.GetComponent<CapsuleCollider>().isTrigger = true;
+                    }
+                }
+            }
         }
     }
     public static void Move(DataRepo dataRepo, PlayerData playerData, Vector3 direction)

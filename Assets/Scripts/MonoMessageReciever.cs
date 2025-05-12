@@ -1,5 +1,4 @@
 using System.Collections;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -64,6 +63,7 @@ public class MonoMessageReciever : MonoBehaviour
         if (start)
             SystemFunction.FixedUpdate(this,DataRepo);
     }
+
     public void OnJumpClicked()
     {
         foreach (PlayerData playerData in DataRepo.Players)
