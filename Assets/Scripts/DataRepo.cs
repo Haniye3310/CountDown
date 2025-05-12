@@ -38,7 +38,10 @@ public class PlayerData
     public Animator PlayerAnimator;
     public Rigidbody PlayerRigidbody;
     public float Strength;
+    public Text DebugText;
+
     [NonSerialized] public bool IsFrozen;
+    [NonSerialized] public bool PauseMovement = false;
     [NonSerialized] public bool IsGrounded = true;
     [NonSerialized] public bool ShouldJump;
     [NonSerialized]public bool ShouldPunch;

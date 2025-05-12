@@ -309,9 +309,9 @@ public class SystemFunction
             {
                 Move(dataRepo, p, direction);
             }
-            if (!p.IsMainPlayer)
+            if (!p.IsMainPlayer && !p.PauseMovement)
                 Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
-            if (p.ShouldJump)
+            if (p.ShouldJump && !p.PauseMovement)
             {
                 Jump(dataRepo, p);
             }
@@ -358,11 +358,18 @@ public class SystemFunction
     {
 
         playerData.IsFrozen = true;
+        playerData.PauseMovement = true;
         float EndTimer = Time.time + 3;
         float interval = Time.time + 0.1f;
+        float endPausing = Time.time + 0.5f;
 
         while (true)
         {
+            if (Time.time > endPausing)
+            {
+                playerData.PauseMovement = false;
+            }
+
             if (Time.time > EndTimer)
             {
                 playerData.Visual.gameObject.SetActive(false);
@@ -483,7 +490,28 @@ public class SystemFunction
             actions.Add(new BotAction { ActionType = BotActionType.Dodge, Score = score });
         }
 
-        return actions.OrderByDescending(a => a.Score).First();
+        var ordered = actions.OrderByDescending(a => a.Score);
+        string debugText = "Action Points:\n";
+        foreach (BotAction action in ordered) 
+        {
+            if (action.ActionType == BotActionType.Move)
+            {
+                debugText += $"{action.ActionType}:Pos({action.TargetPosition}):{action.Score}\n";
+            }
+            else if (action.ActionType == BotActionType.Attack)
+            {
+                string colorHex = ColorUtility.ToHtmlStringRGB(action.TargetEnemy.DebugText.color);
+                debugText += $"{action.ActionType}:To(<color=#{colorHex}>{action.TargetEnemy.Player.name}</color>):{action.Score}\n";
+            }
+            else if (action.ActionType == BotActionType.Dodge) 
+            {
+                debugText += $"{action.ActionType}:{action.Score}\n";
+            }
+        }
+
+        playerData.DebugText.text = debugText;
+
+        return ordered.First();
     }
     public static IEnumerator StartRobot(PlayerData playerData, DataRepo dataRepo)
     {
