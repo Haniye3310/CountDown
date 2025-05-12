@@ -163,6 +163,7 @@ public class SystemFunction
                         p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
 
                         dataRepo.Platforms[j].platform = p;
+                        dataRepo.Platforms[j].platform.Animator.SetBool("Substitute", true);
                     }
                 }
             }
@@ -178,7 +179,7 @@ public class SystemFunction
                         if (dataRepo.Platforms[j].platform.SecondOfPrefab < 1)
                         {
                             dataRepo.Platforms[j].IsOpen = true;
-                            dataRepo.Platforms[j].platform.Animator.SetBool("Open", dataRepo.Platforms[j].IsOpen);
+                            dataRepo.Platforms[j].platform.Animator.SetBool("Open", true);
 
                         }
                     }
