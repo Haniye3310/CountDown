@@ -490,7 +490,7 @@ public class SystemFunction
     {
         playerData.PushForce = pushDirection * forceAmount * 5;
     }
-    public static List<PlayerData> GetNearbyEnemies(DataRepo dataRepo,PlayerData playerData)
+    public static List<PlayerData> GetUnFrozenNearbyEnemies(DataRepo dataRepo,PlayerData playerData)
     {
         List<PlayerData> nearbyEnemies = new List<PlayerData>();
         foreach(PlayerData p in dataRepo.Players)
@@ -498,14 +498,15 @@ public class SystemFunction
             if(p!= playerData)
             {
                 if (Vector3.Distance(p.Player.transform.position, playerData.Player.transform.position) < 1f)
-                    nearbyEnemies.Add(p);
+                    if(!p.IsFrozen)
+                        nearbyEnemies.Add(p);
             }
         }
         return nearbyEnemies;
     }
     public static bool ThreatDetected(DataRepo dataRepo,PlayerData playerData)
     {
-        if(GetNearbyEnemies(dataRepo, playerData).Count>0)
+        if(GetUnFrozenNearbyEnemies(dataRepo, playerData).Count>0)
             return true;
         return false;
     }
@@ -519,7 +520,7 @@ public class SystemFunction
             actions.Add(new BotAction { ActionType = BotActionType.Move, Score = score, TargetPosition = platform.platform.gameObject.transform.position });
         }
 
-        foreach (PlayerData enemy in GetNearbyEnemies(dataRepo, playerData))
+        foreach (PlayerData enemy in GetUnFrozenNearbyEnemies(dataRepo, playerData))
         {
             float score = (10 - enemy.CurrentPlatform.SecondOfPrefab) * 2f;
             actions.Add(new BotAction { ActionType = BotActionType.Attack, Score = score, TargetEnemy = enemy });
