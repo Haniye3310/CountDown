@@ -242,6 +242,7 @@ public class SystemFunction
         {
             Vector3 pushDirection = (otherPlayer.transform.position - player.transform.position).normalized;
             float strengthDifference = playerData.Strength - otherPlayerData.Strength;
+            pushDirection.y = 0;
 
             if (strengthDifference > 0) // This character is stronger
             {
@@ -356,13 +357,6 @@ public class SystemFunction
             {
                 Jump(dataRepo, p);
             }
-            // Clamp vertical velocity to prevent buildup
-            Vector3 vel = p.PlayerRigidbody.linearVelocity;
-            if (vel.y > 5f) // or whatever jump limit you want
-            {
-                vel.y = 5f;
-                p.PlayerRigidbody.linearVelocity = vel;
-            }
             if (p.ShouldPunch)
             {
                 AttemptPunch(mono,dataRepo, p);
@@ -378,6 +372,8 @@ public class SystemFunction
         {
             if (p.PushForce.magnitude > 0.01f) // Apply force smoothly
             {
+                Vector3 horizontalForce = p.PushForce;
+                horizontalForce.y = 0; // Remove vertical force just in case
                 p.PlayerRigidbody.AddForce(p.PushForce, ForceMode.Acceleration);
                 p.PushForce *= 0.9f; // Gradually reduce the push force to prevent infinite sliding
             }
@@ -452,6 +448,7 @@ public class SystemFunction
                     {
                         if (enemyData.IsFrozen) return;
                         Vector3 pushDir = toEnemy;
+                        pushDir.y = 0;
                         ApplyPush(pushDir, 30f, enemyData);
                         enemyData.PlayerAnimator.SetTrigger("GetHit");
                         mono.StartCoroutine(FreezePlayer(enemyData));
@@ -488,6 +485,8 @@ public class SystemFunction
     }
     public static void ApplyPush(Vector3 pushDirection, float forceAmount, PlayerData playerData)
     {
+        pushDirection.y = 0;
+        pushDirection.Normalize();
         playerData.PushForce = pushDirection * forceAmount * 5;
     }
     public static List<PlayerData> GetUnFrozenNearbyEnemies(DataRepo dataRepo,PlayerData playerData)
