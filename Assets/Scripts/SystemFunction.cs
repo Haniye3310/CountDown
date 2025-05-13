@@ -474,7 +474,7 @@ public class SystemFunction
 
         if (playerData.IsGrounded)
         {
-            playerData.PlayerRigidbody.AddForce(Vector3.up * 4, ForceMode.Impulse);
+            playerData.PlayerRigidbody.AddForce(Vector3.up * 10, ForceMode.Impulse);
             playerData.ShouldJump = false;
         }
     }

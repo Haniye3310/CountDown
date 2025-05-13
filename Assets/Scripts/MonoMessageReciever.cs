@@ -8,6 +8,7 @@ public class MonoMessageReciever : MonoBehaviour
     bool start;
     IEnumerator Start()
     {
+        Physics.gravity = new Vector3(0, -40f, 0);
         SystemFunction.CreateMap(DataRepo);
         foreach (PlayerData p in DataRepo.Players)
         {
