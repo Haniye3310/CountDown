@@ -19,6 +19,16 @@ public class SystemFunction
             yield return null;
         }
         dataRepo.GameData.ShouldStopGame = true;
+        foreach(PlayerData p in dataRepo.Players)
+        {
+            if (p.IsMainPlayer)
+            {
+                if(p.Rank == 1){ dataRepo.UIData.ResultBG.sprite = dataRepo.UIData.FirstPlayerSprite; }
+                if(p.Rank == 2){ dataRepo.UIData.ResultBG.sprite = dataRepo.UIData.SecondPlayerSprite; }
+                if(p.Rank == 3){ dataRepo.UIData.ResultBG.sprite = dataRepo.UIData.ThirdPlayerSprite; }
+                if(p.Rank == 4){ dataRepo.UIData.ResultBG.sprite = dataRepo.UIData.ForthPlayerSprite; }
+            }
+        }
         dataRepo.UIData.ResultPanel.gameObject.SetActive(true);
         dataRepo.UIData.UIPanel.gameObject.SetActive(false);
     }
@@ -447,6 +457,28 @@ public class SystemFunction
                 Move(dataRepo, p, Vector3.zero);
             }
         }
+    }
+    public static void Update(DataRepo dataRepo)
+    {
+        //Ranking the players
+        foreach (PlayerData playerData in dataRepo.Players)
+        {
+            if (playerData.IsOutfGround ||
+                playerData.Player.transform.position.y < dataRepo.GameData.GroundTrigger.position.y)
+            {
+                playerData.HasBeenRemoved = true;
+                int numberOfRemoved = 0;
+                foreach (PlayerData playerData2 in dataRepo.Players)
+                {
+                    if (playerData2.HasBeenRemoved)
+                    {
+                        numberOfRemoved++;
+                    }
+                }
+                playerData.Rank = 5 - numberOfRemoved;
+            }
+        }
+
     }
     public static IEnumerator FreezePlayer(PlayerData playerData)
     {

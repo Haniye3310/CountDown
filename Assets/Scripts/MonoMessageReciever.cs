@@ -64,7 +64,11 @@ public class MonoMessageReciever : MonoBehaviour
         if (start)
             SystemFunction.FixedUpdate(this,DataRepo);
     }
-
+    private void Update()
+    {
+        if (start)
+            SystemFunction.Update(DataRepo);
+    }
     public void OnJumpClicked()
     {
         foreach (PlayerData playerData in DataRepo.Players)

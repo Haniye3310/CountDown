@@ -41,7 +41,8 @@ public class PlayerData
     public float Strength;
     public Text DebugText;
 
-
+    [NonSerialized] public bool HasBeenRemoved;
+    [NonSerialized] public int Rank;
     [NonSerialized] public bool IsFrozen;
     [NonSerialized] public bool PauseMovement = false;
     [NonSerialized] public bool IsGrounded = true;
@@ -65,6 +66,11 @@ public class UIData
     public Sprite NumberThreeSprite;
     public Sprite NumberTwoSprite;
     public Sprite NumberOneSprite;
+    public Sprite FirstPlayerSprite;
+    public Sprite SecondPlayerSprite;
+    public Sprite ThirdPlayerSprite;
+    public Sprite ForthPlayerSprite;
+    public Image ResultBG;
 }
 [Serializable]
 public class GameData
