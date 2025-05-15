@@ -186,7 +186,7 @@ public class SystemFunction
 
                 }
             }
-
+            
             float timeToWait = 0;
             if ((int)dataRepo.GameData.RemainingTimeInGame >= 20) timeToWait = 1.3f;
 
@@ -283,6 +283,59 @@ public class SystemFunction
             }
         }
     }
+    public static void OnFootTriggerStay(DataRepo dataRepo,Player player, Collider other)
+    {
+        PlayerData playerData = null;
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            if (p.Player == player)
+            {
+                playerData = p;
+
+            }
+        }
+
+        if (other.gameObject.tag == "Player")
+        {
+            playerData.ShouldJumpOnCharacter = true;
+        }
+    }
+    public static void OnFootTriggerEnter(DataRepo dataRepo, Player player, Collider other)
+    {
+        PlayerData playerData = null;
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            if (p.Player == player)
+            {
+                playerData = p;
+
+            }
+        }
+
+        if (other.gameObject.tag == "Player")
+        {
+            playerData.ShouldJumpOnCharacter = true;
+        }
+    }
+
+    public static void OnFootTriggerExit(DataRepo dataRepo, Player player, Collider other)
+    {
+        PlayerData playerData = null;
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            if (p.Player == player)
+            {
+                playerData = p;
+
+            }
+        }
+
+        if (other.gameObject.tag == "Player")
+        {
+            playerData.ShouldJumpOnCharacter = false;
+        }
+    }
+
     public static void OnPlayerCollisionEnter(MonoBehaviour mono, Player player, Collision collision, DataRepo dataRepo)
     {
        
@@ -362,7 +415,11 @@ public class SystemFunction
                 AttemptPunch(mono,dataRepo, p);
                 p.ShouldPunch = false;
             }
-            if(p.IsOutfGround)
+            if (p.ShouldJumpOnCharacter)
+            {
+                JumpOnCharacter(dataRepo, p);
+            }
+            if (p.IsOutfGround)
                 p.PlayerRigidbody.AddForce
                     ((p.Player.transform.position - dataRepo.GameData.GroundTrigger.position).normalized  * 60,
                     ForceMode.Force);
@@ -468,7 +525,10 @@ public class SystemFunction
         }
     }
 
-
+    public static void JumpOnCharacter(DataRepo dataRepo, PlayerData playerData)
+    {
+        playerData.PlayerRigidbody.AddForce((playerData.Player.transform.forward * 10 + playerData.Player.transform.up*2) , ForceMode.Impulse);
+    }
     public static void Jump(DataRepo dataRepo, PlayerData playerData)
     {
 

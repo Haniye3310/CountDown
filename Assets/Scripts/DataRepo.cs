@@ -41,10 +41,12 @@ public class PlayerData
     public float Strength;
     public Text DebugText;
 
+
     [NonSerialized] public bool IsFrozen;
     [NonSerialized] public bool PauseMovement = false;
     [NonSerialized] public bool IsGrounded = true;
     [NonSerialized] public bool ShouldJump;
+    [NonSerialized] public bool ShouldJumpOnCharacter;
     [NonSerialized]public bool ShouldPunch;
     [NonSerialized] public Vector3 PushForce;
     [NonSerialized] public Vector3 TargetMovement;
