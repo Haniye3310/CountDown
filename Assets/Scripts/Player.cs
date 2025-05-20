@@ -22,4 +22,8 @@ public class Player : MonoBehaviour
     {
         SystemFunction.OnPlayerCollisionStay(this,collision,dataRepo);
     }
+    private void OnTriggerEnter(Collider other)
+    {
+        SystemFunction.OnPlayerTriggerEnter(this,other,dataRepo);
+    }
 }

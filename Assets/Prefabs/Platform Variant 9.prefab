@@ -9,6 +9,10 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 6320216879693160060, guid: cbaa5bc4fb5f71f46b29deb430f1745c, type: 3}
+      propertyPath: m_Layer
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6320216879693160060, guid: cbaa5bc4fb5f71f46b29deb430f1745c, type: 3}
       propertyPath: m_TagString
       value: Ground
       objectReference: {fileID: 0}
@@ -59,6 +63,10 @@ PrefabInstance:
     - target: {fileID: 8641026892814533826, guid: cbaa5bc4fb5f71f46b29deb430f1745c, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8890266906379988443, guid: cbaa5bc4fb5f71f46b29deb430f1745c, type: 3}
+      propertyPath: m_Layer
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8890266906379988443, guid: cbaa5bc4fb5f71f46b29deb430f1745c, type: 3}
       propertyPath: m_TagString

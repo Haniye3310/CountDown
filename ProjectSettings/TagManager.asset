@@ -6,11 +6,12 @@ TagManager:
   tags:
   - Ground
   - OutOfGround
+  - GroundTrigger
   layers:
   - Default
   - TransparentFX
   - Ignore Raycast
-  - 
+  - Ground
   - Water
   - UI
   - 

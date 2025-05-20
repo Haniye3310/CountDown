@@ -40,7 +40,8 @@ public class PlayerData
     public Rigidbody PlayerRigidbody;
     public float Strength;
     public Text DebugText;
-
+    public ParticleSystem JumpVFX;
+    public ParticleSystem PunchVFX;
     [NonSerialized] public bool HasBeenRemoved;
     [NonSerialized] public int Rank;
     [NonSerialized] public bool IsFrozen;

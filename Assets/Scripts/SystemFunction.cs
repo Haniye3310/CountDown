@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class SystemFunction
 {
@@ -346,6 +347,27 @@ public class SystemFunction
         }
     }
 
+    public static void OnPlayerTriggerEnter(Player player, Collider collider,DataRepo dataRepo)
+    {
+        PlayerData playerData = null;
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            if (p.Player == player)
+            {
+                playerData = p;
+
+            }
+        }
+        if (collider.gameObject.tag == "GroundTrigger")
+        {
+            playerData.JumpVFX.Play();
+            Ray ray = new Ray(playerData.Player.transform.position, Vector3.down);
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+            {
+                playerData.JumpVFX.transform.position = hit.point + Vector3.up * 0.01f; // Slightly above the ground
+            }
+        }
+    }
     public static void OnPlayerCollisionEnter(MonoBehaviour mono, Player player, Collision collision, DataRepo dataRepo)
     {
        
@@ -379,6 +401,7 @@ public class SystemFunction
                 }
             }
         }
+
     }
     public static void Move(DataRepo dataRepo, PlayerData playerData, Vector3 direction)
     {
@@ -540,6 +563,8 @@ public class SystemFunction
                         pushDir.y = 0;
                         ApplyPush(pushDir, 30f, enemyData);
                         enemyData.PlayerAnimator.SetTrigger("GetHit");
+                        enemyData.PunchVFX.gameObject.SetActive(true);
+                        enemyData.PunchVFX.Play();
                         mono.StartCoroutine(FreezePlayer(enemyData));
                     }
                 }
@@ -566,6 +591,12 @@ public class SystemFunction
 
         if (playerData.IsGrounded)
         {
+            playerData.JumpVFX.Play();
+            Ray ray = new Ray(playerData.Player.transform.position, Vector3.down);
+            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+            {
+                playerData.JumpVFX.transform.position = hit.point + Vector3.up * 0.01f; // Slightly above the ground
+            }
             playerData.PlayerRigidbody.AddForce(Vector3.up * 10, ForceMode.Impulse);
             playerData.ShouldJump = false;
         }
