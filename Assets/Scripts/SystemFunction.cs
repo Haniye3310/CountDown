@@ -12,7 +12,7 @@ public class SystemFunction
         {
             dataRepo.GameData.RemainingTimeInGame -= Time.deltaTime;
 
-            dataRepo.UIData.RemainingTimeText.text = (dataRepo.GameData.RemainingTimeInGame).ToString();
+            dataRepo.UIData.RemainingTimeText.text = ((int)dataRepo.GameData.RemainingTimeInGame).ToString();
             if (ShouldFinishGame(dataRepo))
                 break;
 
