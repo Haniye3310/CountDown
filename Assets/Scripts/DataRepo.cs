@@ -34,6 +34,7 @@ public class PlatformData
 public class PlayerData
 {
     public Player Player;
+    public bool IsPlayerFalling;
     public GameObject Visual;
     public bool IsMainPlayer;
     public Animator PlayerAnimator;

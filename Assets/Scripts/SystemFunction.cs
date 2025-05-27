@@ -267,6 +267,20 @@ public class SystemFunction
         if (collision.gameObject.tag == "Ground")
         {
             playerData.IsGrounded = true;
+            foreach (PlatformData platformData in dataRepo.Platforms)
+            {
+                if (platformData.platform == playerData.CurrentPlatform)
+                {
+                    if (platformData.IsInAnimatorOpen)
+                    {
+                        playerData.IsPlayerFalling = true;
+                        Vector3 dir = (platformData.platform.transform.position - playerData.Player.transform.position).normalized;
+                        dir.y = 0;
+                        playerData.PlayerRigidbody
+                            .AddForce(dir * 5, ForceMode.Impulse);
+                    }
+                }
+            }
         }
     }
     public static void OnPlayerCollisionExit(Player player, Collision collision, DataRepo dataRepo)
@@ -378,18 +392,32 @@ public class SystemFunction
         if (collision.gameObject.tag == "Ground")
         {
             playerData.IsGrounded = true;
+            foreach (PlatformData platformData in dataRepo.Platforms)
+            {
+                if (platformData.platform == playerData.CurrentPlatform)
+                {
+                    if (platformData.IsInAnimatorOpen)
+                    {
+                        playerData.IsPlayerFalling = true;
+                        Vector3 dir = (platformData.platform.transform.position - playerData.Player.transform.position).normalized;
+                        dir.y = 0;
+                        playerData.PlayerRigidbody
+                            .AddForce(dir * 5, ForceMode.Impulse);
+                    }
+                }
+            }
         }
 
     }
     public static void Move(DataRepo dataRepo, PlayerData playerData, Vector3 direction)
     {
-        if (playerData.IsOutfGround)return;
+        if (playerData.IsOutfGround && !playerData.IsPlayerFalling) return;
         direction = direction.normalized;
         direction.y = 0;
         if (direction != Vector3.zero)
         {
             playerData.PlayerRigidbody.AddForce
-                                (direction * 6000 * Time.fixedDeltaTime, ForceMode.Force);
+                                (direction * 9000 * Time.fixedDeltaTime, ForceMode.Force);
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             playerData.PlayerRigidbody.
                 MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
@@ -426,19 +454,19 @@ public class SystemFunction
                 AttemptPunch(mono,dataRepo, p);
                 p.ShouldPunch = false;
             }
-            if (p.ShouldJumpOnCharacter)
+            if (p.ShouldJumpOnCharacter && !p.IsPlayerFalling)
             {
                 JumpOnCharacter(dataRepo, p);
             }
-            if (p.IsOutfGround)
+            if (p.IsOutfGround && !p.IsPlayerFalling)
                 p.PlayerRigidbody.AddForce
-                    ((p.Player.transform.position - dataRepo.GameData.GroundTrigger.position).normalized  * 60,
+                    ((p.Player.transform.position - dataRepo.GameData.GroundTrigger.position).normalized * 60,
                     ForceMode.Force);
             p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
         }
         foreach (PlayerData p in dataRepo.Players)
         {
-            if (p.PushForce.magnitude > 0.01f) // Apply force smoothly
+            if (p.PushForce.magnitude > 0.01f && !p.IsPlayerFalling) // Apply force smoothly
             {
                 Vector3 horizontalForce = p.PushForce;
                 horizontalForce.y = 0; // Remove vertical force just in case
@@ -496,39 +524,17 @@ public class SystemFunction
                                 .OrderBy(pair => pair.Value)
                                 .First().Key.platform;
         }
-        //Fall down the character
-        foreach(PlayerData playerData in dataRepo.Players)
-        {
-            foreach (PlatformData platformData in dataRepo.Platforms)
-            {
-                Vector3 platformPos = new Vector3
-                    (platformData.platform.transform.position.x, 0, platformData.platform.transform.position.z);
-                Vector3 playerPos = new Vector3
-                    (playerData.Player.transform.position.x, 0, playerData.Player.transform.position.z);
 
-                if (platformData.IsInAnimatorOpen)
-                {
-                    Debug.Log($"Distance:{Vector3.Distance(platformPos, playerPos)}");
-                    if (Vector3.Distance(platformPos, playerPos) < 1.2f)
-                    {
-                        playerData.Player.GetComponent<CapsuleCollider>().isTrigger = true;
-                        Vector3 dir = (platformData.platform.transform.position - playerData.Player.transform.position).normalized;
-                        dir.y = 0;
-                        playerData.PlayerRigidbody
-                            .AddForce(dir * 5, ForceMode.Impulse);
-                    }
-                }
-            }
-        }
 
+        
     }
     public static IEnumerator FreezePlayer(PlayerData playerData)
     {
 
         playerData.IsFrozen = true;
         playerData.PauseMovement = true;
-        float EndTimer = Time.time + 3;
-        float interval = Time.time + 0.1f;
+        float EndTimer = Time.time + 1.5f;
+        float interval = Time.time + 0.01f;
         float endPausing = Time.time + 0.5f;
 
         while (true)
@@ -603,12 +609,13 @@ public class SystemFunction
 
     public static void JumpOnCharacter(DataRepo dataRepo, PlayerData playerData)
     {
+        if (!playerData.IsPlayerFalling)
         playerData.PlayerRigidbody.AddForce((playerData.Player.transform.forward * 10 + playerData.Player.transform.up*2) , ForceMode.Impulse);
     }
     public static void Jump(DataRepo dataRepo, PlayerData playerData)
     {
 
-        if (playerData.IsGrounded)
+        if (playerData.IsGrounded && !playerData.IsPlayerFalling)
         {
             playerData.JumpVFX.Play();
             Ray ray = new Ray(playerData.Player.transform.position, Vector3.down);
@@ -627,6 +634,7 @@ public class SystemFunction
     }
     public static void ApplyPush(Vector3 pushDirection, float forceAmount, PlayerData playerData)
     {
+  
         pushDirection.y = 0;
         pushDirection.Normalize();
         playerData.PushForce = pushDirection * forceAmount * 5;
