@@ -267,17 +267,6 @@ public class SystemFunction
         if (collision.gameObject.tag == "Ground")
         {
             playerData.IsGrounded = true;
-            playerData.CurrentPlatform = collision.gameObject.GetComponentInParent<Platform>();
-            foreach (PlatformData platformData in dataRepo.Platforms)
-            {
-                if (platformData.platform == playerData.CurrentPlatform)
-                {
-                    if (platformData.IsInAnimatorOpen)
-                    {
-                        playerData.Player.GetComponent<CapsuleCollider>().isTrigger = true;
-                    }
-                }
-            }
         }
     }
     public static void OnPlayerCollisionExit(Player player, Collision collision, DataRepo dataRepo)
@@ -389,17 +378,6 @@ public class SystemFunction
         if (collision.gameObject.tag == "Ground")
         {
             playerData.IsGrounded = true;
-            playerData.CurrentPlatform = collision.gameObject.GetComponentInParent<Platform>();
-            foreach(PlatformData platformData in dataRepo.Platforms)
-            {
-                if(platformData.platform == playerData.CurrentPlatform)
-                {
-                    if (platformData.IsInAnimatorOpen)
-                    {
-                        playerData.Player.GetComponent<CapsuleCollider>().isTrigger = true;
-                    }
-                }
-            }
         }
 
     }
@@ -499,6 +477,47 @@ public class SystemFunction
                     }
                 }
                 playerData.Rank = 5 - numberOfRemoved;
+            }
+        }
+        //Setting all players platform
+        foreach(PlayerData playerData in dataRepo.Players)
+        {
+            Dictionary<PlatformData,float> distancesToPlayer = new Dictionary<PlatformData, float>();
+            foreach(PlatformData platformData in dataRepo.Platforms)
+            {
+                Vector3 platformPos = new Vector3
+                    (platformData.platform.transform.position.x, 0, platformData.platform.transform.position.z);
+                Vector3 playerPos = new Vector3
+                    (playerData.Player.transform.position.x, 0, playerData.Player.transform.position.z);
+
+                distancesToPlayer.Add(platformData,Vector3.Distance(platformPos,playerPos));
+            }
+            playerData.CurrentPlatform = distancesToPlayer
+                                .OrderBy(pair => pair.Value)
+                                .First().Key.platform;
+        }
+        //Fall down the character
+        foreach(PlayerData playerData in dataRepo.Players)
+        {
+            foreach (PlatformData platformData in dataRepo.Platforms)
+            {
+                Vector3 platformPos = new Vector3
+                    (platformData.platform.transform.position.x, 0, platformData.platform.transform.position.z);
+                Vector3 playerPos = new Vector3
+                    (playerData.Player.transform.position.x, 0, playerData.Player.transform.position.z);
+
+                if (platformData.IsInAnimatorOpen)
+                {
+                    Debug.Log($"Distance:{Vector3.Distance(platformPos, playerPos)}");
+                    if (Vector3.Distance(platformPos, playerPos) < 1.2f)
+                    {
+                        playerData.Player.GetComponent<CapsuleCollider>().isTrigger = true;
+                        Vector3 dir = (platformData.platform.transform.position - playerData.Player.transform.position).normalized;
+                        dir.y = 0;
+                        playerData.PlayerRigidbody
+                            .AddForce(dir * 5, ForceMode.Impulse);
+                    }
+                }
             }
         }
 
