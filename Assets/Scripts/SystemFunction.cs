@@ -510,9 +510,16 @@ public class SystemFunction
                                 .OrderBy(pair => pair.Value)
                                 .First().Key.platform;
         }
+        foreach(PlayerData playerData in dataRepo.Players)
+        {
+            if (playerData.Player.transform.position.y < dataRepo.GameData.GroundTrigger.position.y)
+            {
+                playerData.Player.GetComponent<CapsuleCollider>().isTrigger = true;
+            }
+        }
 
 
-        
+
     }
     public static IEnumerator FreezePlayer(PlayerData playerData)
     {

@@ -34,7 +34,6 @@ public class PlatformData
 public class PlayerData
 {
     public Player Player;
-    public bool IsPlayerFalling;
     public GameObject Visual;
     public bool IsMainPlayer;
     public Animator PlayerAnimator;
@@ -43,6 +42,7 @@ public class PlayerData
     public Text DebugText;
     public ParticleSystem JumpVFX;
     public ParticleSystem PunchVFX;
+    [NonSerialized]public bool IsPlayerFalling;
     [NonSerialized] public bool HasBeenRemoved;
     [NonSerialized] public int Rank;
     [NonSerialized] public bool IsFrozen;
