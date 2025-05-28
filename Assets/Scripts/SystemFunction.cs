@@ -75,7 +75,7 @@ public class SystemFunction
         }
 
         //increase number of 3second tiles if they are less than 3
-        if (GetNumberOfTileInMap(3, dataRepo) < 2) 
+        if (GetNumberOfTileInMap(3, dataRepo) < 2)
         {
             foreach (PlatformData pl in dataRepo.Platforms)
             {
@@ -99,6 +99,7 @@ public class SystemFunction
 
             }
         }
+
 
     }
     public static int GetNumberOfTileInMap(int SecondOfTile,DataRepo dataRepo)
@@ -297,23 +298,6 @@ public class SystemFunction
             }
         }
     }
-    public static void OnFootTriggerStay(DataRepo dataRepo,Player player, Collider other)
-    {
-        PlayerData playerData = null;
-        foreach (PlayerData p in dataRepo.Players)
-        {
-            if (p.Player == player)
-            {
-                playerData = p;
-
-            }
-        }
-
-        if (other.gameObject.tag == "Player")
-        {
-            playerData.ShouldJumpOnCharacter = true;
-        }
-    }
     public static void OnFootTriggerEnter(DataRepo dataRepo, Player player, Collider other)
     {
         PlayerData playerData = null;
@@ -325,10 +309,11 @@ public class SystemFunction
 
             }
         }
-
+        Player otherPlayer = other.gameObject.GetComponent<Player>();
         if (other.gameObject.tag == "Player")
         {
-            playerData.ShouldJumpOnCharacter = true;
+            if (otherPlayer != player)
+                playerData.ShouldJumpOnCharacter = true;
         }
     }
 
@@ -343,10 +328,11 @@ public class SystemFunction
 
             }
         }
-
+        Player otherPlayer = other.gameObject.GetComponent<Player>();
         if (other.gameObject.tag == "Player")
         {
-            playerData.ShouldJumpOnCharacter = false;
+            if (otherPlayer != player)
+                playerData.ShouldJumpOnCharacter = false;
         }
     }
 
@@ -609,8 +595,9 @@ public class SystemFunction
 
     public static void JumpOnCharacter(DataRepo dataRepo, PlayerData playerData)
     {
-        if (!playerData.IsPlayerFalling)
-        playerData.PlayerRigidbody.AddForce((playerData.Player.transform.forward * 10 + playerData.Player.transform.up*2) , ForceMode.Impulse);
+        if (!playerData.IsPlayerFalling && !playerData.IsGrounded)
+            playerData.PlayerRigidbody.AddForce
+                ((playerData.Player.transform.forward * 10 + playerData.Player.transform.up * 2), ForceMode.Impulse);
     }
     public static void Jump(DataRepo dataRepo, PlayerData playerData)
     {
@@ -634,7 +621,7 @@ public class SystemFunction
     }
     public static void ApplyPush(Vector3 pushDirection, float forceAmount, PlayerData playerData)
     {
-  
+
         pushDirection.y = 0;
         pushDirection.Normalize();
         playerData.PushForce = pushDirection * forceAmount * 5;
