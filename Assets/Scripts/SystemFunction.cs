@@ -400,15 +400,24 @@ public class SystemFunction
         if (playerData.IsOutfGround && !playerData.IsPlayerFalling) return;
         direction = direction.normalized;
         direction.y = 0;
-        if (direction != Vector3.zero)
+
+        if (Mathf.Approximately(0, direction.magnitude))
         {
-            playerData.PlayerRigidbody.AddForce
-                                (direction * 9000 * Time.fixedDeltaTime, ForceMode.Force);
+            playerData.SpeedMultiplier -= Time.deltaTime * 7000;
+        }
+        else
+        {
+            playerData.MoveDirection = direction;
+            playerData.SpeedMultiplier += Time.deltaTime * 7000;
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             playerData.PlayerRigidbody.
                 MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
         }
-        if (direction.magnitude < 0.1f)
+        playerData.SpeedMultiplier = Mathf.Clamp(playerData.SpeedMultiplier, 0, 6000);
+        playerData.PlayerRigidbody.AddForce
+                    (playerData.MoveDirection * playerData.SpeedMultiplier * Time.fixedDeltaTime, ForceMode.Force);
+
+        if (playerData.SpeedMultiplier < 0.1f)
         {
             playerData.PlayerAnimator.SetFloat("MoveSpeed", 0);
         }
@@ -417,6 +426,7 @@ public class SystemFunction
             playerData.PlayerAnimator.SetFloat("MoveSpeed", 1);
         }
     }
+
     public static void FixedUpdate(MonoBehaviour mono,DataRepo dataRepo)
     {
         float v = dataRepo.UIData.Joystick.Vertical;

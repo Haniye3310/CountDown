@@ -42,6 +42,9 @@ public class PlayerData
     public Text DebugText;
     public ParticleSystem JumpVFX;
     public ParticleSystem PunchVFX;
+
+    [NonSerialized] public float SpeedMultiplier;
+    [NonSerialized] public Vector3 MoveDirection;
     [NonSerialized]public bool IsPlayerFalling;
     [NonSerialized] public bool HasBeenRemoved;
     [NonSerialized] public int Rank;
