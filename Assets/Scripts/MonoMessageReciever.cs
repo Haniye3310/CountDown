@@ -54,7 +54,10 @@ public class MonoMessageReciever : MonoBehaviour
         {
             if (!DataRepo.Players[i].IsMainPlayer)
             {
-                StartCoroutine(SystemFunction.StartRobot(DataRepo.Players[i], DataRepo));
+                if (DataRepo.Players[i].BotDifficulty == BotDifficulty.Easy) { DataRepo.Players[i].DecisionInterval = 1.5f; }
+                if (DataRepo.Players[i].BotDifficulty == BotDifficulty.Medium) { DataRepo.Players[i].DecisionInterval = 0.6f; }
+                if (DataRepo.Players[i].BotDifficulty == BotDifficulty.Hard) { DataRepo.Players[i].DecisionInterval = 0.3f; }
+                StartCoroutine(SystemFunction.StartRobot(this,DataRepo.Players[i], DataRepo));
             }
         }
         StartCoroutine(SystemFunction.CountDown(DataRepo));

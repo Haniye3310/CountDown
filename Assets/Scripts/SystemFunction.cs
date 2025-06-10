@@ -643,6 +643,100 @@ public class SystemFunction
         pushDirection.Normalize();
         playerData.PushForce = pushDirection * forceAmount * 5;
     }
+
+
+    public static IEnumerator StartRobot(MonoBehaviour mono,PlayerData playerData, DataRepo dataRepo)
+    {
+        while(true)
+        {
+            if (Time.time - playerData.LastDecisionTime >= playerData.DecisionInterval)
+            {
+                MakeDecision(mono,dataRepo,playerData);
+                playerData.LastDecisionTime = Time.time;
+            }
+            yield return null;
+        }
+    }
+
+    public static void MakeDecision(MonoBehaviour mono,DataRepo dataRepo,PlayerData playerData)
+    {
+        switch (playerData.BotDifficulty)
+        {
+            case BotDifficulty.Easy:
+                mono.StartCoroutine( EasyBotLogic(dataRepo,playerData));
+                break;
+            case BotDifficulty.Medium:
+                MediumBotLogic(dataRepo,playerData);
+                break;
+            case BotDifficulty.Hard:
+                HardBotLogic(dataRepo,playerData);
+                break;
+        }
+    }
+    public static IEnumerator EasyBotLogic(DataRepo dataRepo,PlayerData playerData) 
+    {
+        if (playerData.CurrentPlatform.SecondOfPrefab == 0)
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,0);
+
+        if (IsThereAnyEnemyNear(dataRepo, playerData) && IsThereChance(25))
+        {
+            yield return new WaitForSeconds(0.5f);
+            OnPunchClicked(dataRepo,playerData);
+        }
+        else
+        {
+            playerData.TargetMovement = FindRandomPosOnWholeMap(dataRepo);
+        }
+    }
+    public static void MediumBotLogic(DataRepo dataRepo, PlayerData playerData) 
+    {
+        if (playerData.CurrentPlatform.SecondOfPrefab == 0)
+            playerData.TargetMovement = FindNearestTilePosBiggerThanCurrent(dataRepo,playerData.CurrentPlatform);
+
+        if (IsThereAnyEnemyNear(dataRepo, playerData))
+            playerData.TargetMovement = FindOneNearByTile(dataRepo,playerData.CurrentPlatform);
+
+        if (IsThereAnyEnemyNear(dataRepo, playerData))
+            OnPunchClicked(dataRepo,playerData);
+
+        if (playerData.CurrentPlatform.SecondOfPrefab == 0 && IsThereAnyEnemyNear(dataRepo,playerData))
+            MovementHelper.JumpToSafeTile(this);
+
+        if (IsThereChance(15))
+            MovementHelper.JumpToRandomTile(this);
+    }
+    public static void HardBotLogic(DataRepo dataRepo, PlayerData playerData) 
+    {
+        if (playerData.CurrentPlatform.SecondOfPrefab <= 1)
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,2);
+
+        List<PlayerData> enemies = GetUnFrozenNearbyEnemies(dataRepo,playerData);
+        bool isThereAnyEnemyOnBotsTile = false;
+        foreach (PlayerData enemy in enemies)
+        {
+            if(enemy.CurrentPlatform == playerData.CurrentPlatform)
+            {
+                isThereAnyEnemyOnBotsTile = true;
+            }
+        }
+        if (IsThereAnyEnemyNear(dataRepo,playerData)& isThereAnyEnemyOnBotsTile)
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,2);
+        
+
+        foreach(PlayerData enemy in enemies)
+        {
+            if (enemy.CurrentPlatform.SecondOfPrefab <= 1 && playerData.CurrentPlatform.SecondOfPrefab>= 2)
+            {
+                OnPunchClicked(dataRepo, playerData);
+            }
+        }
+
+        if (playerData.CurrentPlatform.SecondOfPrefab <= 1 && IsThereAnyEnemyNear(dataRepo,playerData))
+            MovementHelper.JumpToSafeTile();
+
+        if (IsThereChance(25))
+            MovementHelper.JumpToRandomTile();
+    }
     public static List<PlayerData> GetUnFrozenNearbyEnemies(DataRepo dataRepo,PlayerData playerData)
     {
         List<PlayerData> nearbyEnemies = new List<PlayerData>();
@@ -657,76 +751,11 @@ public class SystemFunction
         }
         return nearbyEnemies;
     }
-    public static bool ThreatDetected(DataRepo dataRepo,PlayerData playerData)
+    public static bool IsThereAnyEnemyNear(DataRepo dataRepo,PlayerData playerData)
     {
         if(GetUnFrozenNearbyEnemies(dataRepo, playerData).Count>0)
             return true;
         return false;
-    }
-    public static BotAction EvaluateBestAction(PlayerData playerData, DataRepo dataRepo)
-    {
-        List<BotAction> actions = new List<BotAction>();
-
-        foreach (PlatformData platform in dataRepo.Platforms)
-        {
-            float score = platform.platform.SecondOfPrefab - Vector3.Distance(playerData.Player.transform.position, platform.platform.gameObject.transform.position) * 0.5f;
-            actions.Add(new BotAction { ActionType = BotActionType.Move, Score = score, TargetPosition = platform.platform.gameObject.transform.position });
-        }
-
-        foreach (PlayerData enemy in GetUnFrozenNearbyEnemies(dataRepo, playerData))
-        {
-            float score = (10 - enemy.CurrentPlatform.SecondOfPrefab) * 2f;
-            actions.Add(new BotAction { ActionType = BotActionType.Attack, Score = score, TargetEnemy = enemy });
-        }
-
-        if (ThreatDetected(dataRepo, playerData))
-        {
-            float score = 10f / playerData.CurrentPlatform.SecondOfPrefab;
-            actions.Add(new BotAction { ActionType = BotActionType.Dodge, Score = score });
-        }
-
-        var ordered = actions.OrderByDescending(a => a.Score);
-        string debugText = "Action Points:\n";
-        foreach (BotAction action in ordered) 
-        {
-            if (action.ActionType == BotActionType.Move)
-            {
-                debugText += $"{action.ActionType}:Pos({action.TargetPosition}):{action.Score}\n";
-            }
-            else if (action.ActionType == BotActionType.Attack)
-            {
-                string colorHex = ColorUtility.ToHtmlStringRGB(action.TargetEnemy.DebugText.color);
-                debugText += $"{action.ActionType}:To(<color=#{colorHex}>{action.TargetEnemy.Player.name}</color>):{action.Score}\n";
-            }
-            else if (action.ActionType == BotActionType.Dodge) 
-            {
-                debugText += $"{action.ActionType}:{action.Score}\n";
-            }
-        }
-
-        playerData.DebugText.text = debugText;
-
-        return ordered.First();
-    }
-    public static IEnumerator StartRobot(PlayerData playerData, DataRepo dataRepo)
-    {
-        while (true)
-        {
-            BotAction botAction= EvaluateBestAction(playerData, dataRepo);
-            if(botAction.ActionType == BotActionType.Move)
-            {
-                playerData.TargetMovement = botAction.TargetPosition;
-            }
-            if(botAction.ActionType == BotActionType.Attack)
-            {
-                OnPunchClicked(dataRepo, playerData);
-            }
-            if(botAction.ActionType == BotActionType.Dodge)
-            {
-                OnJumpClicked(dataRepo, playerData);
-            }
-            yield return null;
-        }
     }
 
     //Medium bot: Tile Escape Rule
@@ -799,6 +828,7 @@ public class SystemFunction
     //Medium Bot: Jumping(Threat)
     //Hard Bot : Jumping(Threat)
     //Easy Bot : Tile Escape Rule
+    //Hard Bot : Tile Escape Rule
     public static Vector3 FindDifferenttileBiggerThanValue(DataRepo dataRepo, Platform currentPlatform,int value)
     {
         foreach (PlatformData p in dataRepo.Platforms)
@@ -856,8 +886,7 @@ public class SystemFunction
         );
     }
 
-    //Easy Bot : PunchRule
-    public static bool PuchWithprobablity(float probability)
+    public static bool IsThereChance(float probability)
     {
         float chance = Random.Range(0f, 100f);
 

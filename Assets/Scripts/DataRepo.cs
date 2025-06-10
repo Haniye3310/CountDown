@@ -13,15 +13,8 @@ public class DataRepo : MonoBehaviour
     [NonSerialized]public List<PlatformData> Platforms = new List<PlatformData>();
 
 }
-public enum BotActionType { Move, Attack, Dodge, Idle }
 
-public class BotAction
-{
-    public BotActionType ActionType;
-    public float Score;
-    public Vector3 TargetPosition;
-    public PlayerData TargetEnemy;
-}
+public enum BotDifficulty { Easy, Medium, Hard ,None}
 
 [Serializable]
 public class PlatformData
@@ -42,7 +35,10 @@ public class PlayerData
     public Text DebugText;
     public ParticleSystem JumpVFX;
     public ParticleSystem PunchVFX;
+    public BotDifficulty BotDifficulty;
 
+    [NonSerialized] public float DecisionInterval;
+    [NonSerialized] public float LastDecisionTime;
     [NonSerialized] public float SpeedMultiplier;
     [NonSerialized] public Vector3 MoveDirection;
     [NonSerialized]public bool IsPlayerFalling;
