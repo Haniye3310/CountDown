@@ -728,4 +728,153 @@ public class SystemFunction
             yield return null;
         }
     }
+
+    //Medium bot: Tile Escape Rule
+    public static Vector3 FindNearestTilePosBiggerThanCurrent(DataRepo dataRepo,Platform currentPlatform)
+    {
+        Dictionary<PlatformData, float> distances = new Dictionary<PlatformData, float>();
+
+        // Store distances only for platforms bigger than the current one
+        foreach (PlatformData p in dataRepo.Platforms)
+        {
+            if (p.platform.SecondOfPrefab > currentPlatform.SecondOfPrefab) 
+            {
+                float distance = Vector3.Distance(p.platform.transform.position, currentPlatform.transform.position);
+                distances.Add(p, distance);
+            }
+        }
+
+        // Sort by distance (ascending)
+        var sorted = distances.OrderBy(pair => pair.Value);
+
+        // Get the nearest one, if any
+        PlatformData nearest = sorted.FirstOrDefault().Key;
+
+        return nearest.platform.transform.position;
+    }
+    //Medium bot: Tile Targeting
+    public static Vector3 FindAnyTileBiggerThanCurrentIncludingEdge(DataRepo dataRepo, Platform currentPlatform)
+    {
+
+        foreach (PlatformData p in dataRepo.Platforms)
+        {
+            if (p.platform.SecondOfPrefab > currentPlatform.SecondOfPrefab) 
+            {
+                Transform t = p.platform.transform;
+
+                // Use scale as bounds (assumes platform is centered at origin in local space)
+                Vector3 scale = t.localScale;
+
+                // Generate a random local position within the scaled bounds (X-Z plane)
+                float randomX = Random.Range(-0.5f * scale.x, 0.5f * scale.x);
+                float randomZ = Random.Range(-0.5f * scale.z, 0.5f * scale.z);
+
+                // Assuming platform is flat on the Y axis (like a floor), Y is constant
+                Vector3 localOffset = new Vector3(randomX, t.position.y, randomZ);
+
+                // Convert local offset to world space
+                Vector3 randomWorldPosition = t.TransformPoint(localOffset);
+
+                return randomWorldPosition;
+            }
+        }
+        return Vector3.zero;
+    }
+    //Hard Bot : TileTargeting
+    public static Vector3 FindHighestTileCenter(DataRepo dataRepo, Platform currentPlatform)
+    {
+        Vector3 highestTileCenter = Vector3.zero;
+        float highestSecond = float.MinValue;
+        foreach(PlatformData p in dataRepo.Platforms)
+        {
+            if (p.platform.SecondOfPrefab > highestSecond)
+            {
+                highestSecond = p.platform.SecondOfPrefab;
+                highestTileCenter = p.platform.transform.position;
+            }
+        }
+        return highestTileCenter; ;
+    }
+    //HardBot: Player Proximity
+    //Medium Bot: Jumping(Threat)
+    //Hard Bot : Jumping(Threat)
+    //Easy Bot : Tile Escape Rule
+    public static Vector3 FindDifferenttileBiggerThanValue(DataRepo dataRepo, Platform currentPlatform,int value)
+    {
+        foreach (PlatformData p in dataRepo.Platforms)
+        {
+            if (p.platform.SecondOfPrefab >= value && p.platform.gameObject != currentPlatform.gameObject)
+            {
+                ///////////// if easy bot random on p 
+                return p.platform.transform.position;
+            }
+        }
+        return Vector3.zero;
+    }
+
+    //Medium Bot: Player Proximity
+    public static Vector3 FindOneNearByTile(DataRepo dataRepo,Platform currentPlatform) 
+    {
+        Dictionary<PlatformData, float> distances = new Dictionary<PlatformData, float>();
+
+        // Store distances 
+        foreach (PlatformData p in dataRepo.Platforms)
+        {
+            float distance = Vector3.Distance(p.platform.transform.position, currentPlatform.transform.position);
+            distances.Add(p, distance);
+        }
+
+        // Sort by distance (ascending)
+        var sorted = distances.OrderBy(pair => pair.Value);
+
+        // Get the nearest one, if any
+        PlatformData nearest = sorted.FirstOrDefault().Key;
+
+        return nearest.platform.transform.position;
+    }
+
+    //Easy Bot : Tile targeting
+    public static Vector3 FindRandomPosOnWholeMap(DataRepo dataRepo)
+    {
+        // Calculate the effective radius of the ground
+        float radius = dataRepo.GameData.GroundTrigger.localScale.x * 0.3f;
+
+        // Generate a random angle in radians
+        float angle = Random.Range(0f, Mathf.PI * 2);
+
+        // Calculate x and z coordinates relative to the center of the ground
+        float x = Mathf.Cos(angle) * radius;
+        float z = Mathf.Sin(angle) * radius;
+
+        // Adjust the position to be relative to the ground's actual position
+        float adjustedY = dataRepo.GameData.GroundTrigger.position.y + (dataRepo.GameData.GroundTrigger.localScale.y); // Top surface of the ground
+
+        return new Vector3(
+            x + dataRepo.GameData.GroundTrigger.position.x, // Adjust x based on the ground's center position
+            adjustedY, // Set Y to the ground's top surface
+            z + dataRepo.GameData.GroundTrigger.position.z  // Adjust z based on the ground's center position
+        );
+    }
+
+    //Easy Bot : PunchRule
+    public static bool PuchWithprobablity(float probability)
+    {
+        float chance = Random.Range(0f, 100f);
+
+        if (chance < probability)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    //Medium Bot : Jump(Threat)
+    //Hard Bot : Jump(Threat)
+    public static void JumpToTileWithValue(DataRepo dataRepo,int value)
+    {
+
+    }
+
+
+
 }
