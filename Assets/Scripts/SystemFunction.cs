@@ -699,11 +699,19 @@ public class SystemFunction
         if (IsThereAnyEnemyNear(dataRepo, playerData))
             OnPunchClicked(dataRepo,playerData);
 
-        if (playerData.CurrentPlatform.SecondOfPrefab == 0 && IsThereAnyEnemyNear(dataRepo,playerData))
-            MovementHelper.JumpToSafeTile(this);
+        if (playerData.CurrentPlatform.SecondOfPrefab == 0 && IsThereAnyEnemyNear(dataRepo, playerData))
 
-        if (IsThereChance(15))
-            MovementHelper.JumpToRandomTile(this);
+        {
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,1);
+            OnJumpClicked(dataRepo,playerData);
+        }
+        else
+        {
+            playerData.TargetMovement = FindAnyTileBiggerThanCurrentIncludingEdge(dataRepo,playerData.CurrentPlatform);
+            if (IsThereChance(15))
+                OnJumpClicked(dataRepo, playerData);
+        }
+
     }
     public static void HardBotLogic(DataRepo dataRepo, PlayerData playerData) 
     {
@@ -731,11 +739,18 @@ public class SystemFunction
             }
         }
 
-        if (playerData.CurrentPlatform.SecondOfPrefab <= 1 && IsThereAnyEnemyNear(dataRepo,playerData))
-            MovementHelper.JumpToSafeTile();
+        if (playerData.CurrentPlatform.SecondOfPrefab <= 1 && IsThereAnyEnemyNear(dataRepo, playerData)&&playerData.IsGrounded)
+        {
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo, playerData.CurrentPlatform, 2);
+            OnJumpClicked(dataRepo,playerData);
+        }
 
-        if (IsThereChance(25))
-            MovementHelper.JumpToRandomTile();
+        else
+        {
+            playerData.TargetMovement = FindHighestTileCenter(dataRepo, playerData.CurrentPlatform);
+            if (IsThereChance(25))
+                OnJumpClicked(dataRepo, playerData);
+        }
     }
     public static List<PlayerData> GetUnFrozenNearbyEnemies(DataRepo dataRepo,PlayerData playerData)
     {
@@ -896,14 +911,4 @@ public class SystemFunction
         }
         return false;
     }
-
-    //Medium Bot : Jump(Threat)
-    //Hard Bot : Jump(Threat)
-    public static void JumpToTileWithValue(DataRepo dataRepo,int value)
-    {
-
-    }
-
-
-
 }

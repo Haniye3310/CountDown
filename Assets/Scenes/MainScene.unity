@@ -5088,6 +5088,7 @@ MonoBehaviour:
     DebugText: {fileID: 123702919}
     JumpVFX: {fileID: 1818347325}
     PunchVFX: {fileID: 1355255828}
+    BotDifficulty: 3
   - Player: {fileID: 246945506}
     Visual: {fileID: 503525874}
     IsMainPlayer: 0
@@ -5097,6 +5098,7 @@ MonoBehaviour:
     DebugText: {fileID: 1339814019}
     JumpVFX: {fileID: 1472541253}
     PunchVFX: {fileID: 460453954}
+    BotDifficulty: 0
   - Player: {fileID: 1920420985}
     Visual: {fileID: 980705920}
     IsMainPlayer: 0
@@ -5106,6 +5108,7 @@ MonoBehaviour:
     DebugText: {fileID: 310058058}
     JumpVFX: {fileID: 329639912}
     PunchVFX: {fileID: 1340673414}
+    BotDifficulty: 1
   - Player: {fileID: 2124323571}
     Visual: {fileID: 708734887}
     IsMainPlayer: 0
@@ -5115,6 +5118,7 @@ MonoBehaviour:
     DebugText: {fileID: 1557478724}
     JumpVFX: {fileID: 1517474142}
     PunchVFX: {fileID: 705976597}
+    BotDifficulty: 2
   UIData:
     Joystick: {fileID: 1130287724}
     RemainingTimeText: {fileID: 919208713}
