@@ -675,14 +675,23 @@ public class SystemFunction
     }
     public static IEnumerator EasyBotLogic(DataRepo dataRepo,PlayerData playerData) 
     {
+        if(playerData.CurrentPlatform == null)
+        {
+            yield break;
+        }
+        //Tile Escape Rule
         if (playerData.CurrentPlatform.SecondOfPrefab == 0)
-            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,0);
+        {
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,0,playerData.BotDifficulty);
+        }
 
-        if (IsThereAnyEnemyNear(dataRepo, playerData) && IsThereChance(25))
+        //Punch Rule
+        if (IsThereAnyEnemyNear(dataRepo, playerData,true) && IsThereChance(25))
         {
             yield return new WaitForSeconds(0.5f);
             OnPunchClicked(dataRepo,playerData);
         }
+        //Tile Targeting
         else
         {
             playerData.TargetMovement = FindRandomPosOnWholeMap(dataRepo);
@@ -690,21 +699,31 @@ public class SystemFunction
     }
     public static void MediumBotLogic(DataRepo dataRepo, PlayerData playerData) 
     {
+        if (playerData.CurrentPlatform == null)
+        {
+            return;
+        }
+        //Tile Escape Rule
         if (playerData.CurrentPlatform.SecondOfPrefab == 0)
             playerData.TargetMovement = FindNearestTilePosBiggerThanCurrent(dataRepo,playerData.CurrentPlatform);
 
-        if (IsThereAnyEnemyNear(dataRepo, playerData))
-            playerData.TargetMovement = FindOneNearByTile(dataRepo,playerData.CurrentPlatform);
+        //player Proximity
+        if (IsThereAnyEnemyNear(dataRepo, playerData,true))
+            playerData.TargetMovement = FindOneNearByEmptyTile(dataRepo,playerData.CurrentPlatform);
 
-        if (IsThereAnyEnemyNear(dataRepo, playerData))
+        //Punch Rule
+        if (IsThereAnyEnemyNear(dataRepo, playerData,true))
             OnPunchClicked(dataRepo,playerData);
 
-        if (playerData.CurrentPlatform.SecondOfPrefab == 0 && IsThereAnyEnemyNear(dataRepo, playerData))
+        //Jumping (Threat)
+        if (playerData.CurrentPlatform.SecondOfPrefab == 0 && IsThereAnyEnemyNear(dataRepo, playerData, true))
 
         {
-            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,1);
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,1,playerData.BotDifficulty);
             OnJumpClicked(dataRepo,playerData);
         }
+        //Tile Targeting
+        //Jumping (Movement)
         else
         {
             playerData.TargetMovement = FindAnyTileBiggerThanCurrentIncludingEdge(dataRepo,playerData.CurrentPlatform);
@@ -715,22 +734,20 @@ public class SystemFunction
     }
     public static void HardBotLogic(DataRepo dataRepo, PlayerData playerData) 
     {
-        if (playerData.CurrentPlatform.SecondOfPrefab <= 1)
-            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,2);
-
-        List<PlayerData> enemies = GetUnFrozenNearbyEnemies(dataRepo,playerData);
-        bool isThereAnyEnemyOnBotsTile = false;
-        foreach (PlayerData enemy in enemies)
+        if (playerData.CurrentPlatform == null)
         {
-            if(enemy.CurrentPlatform == playerData.CurrentPlatform)
-            {
-                isThereAnyEnemyOnBotsTile = true;
-            }
+            return;
         }
-        if (IsThereAnyEnemyNear(dataRepo,playerData)& isThereAnyEnemyOnBotsTile)
-            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,2);
-        
+        //Tile Escape Rule
+        if (playerData.CurrentPlatform.SecondOfPrefab <= 1)
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,2,playerData.BotDifficulty);
 
+        //Player Proximity
+        if (IsThereAnyEnemyNear(dataRepo,playerData,false))
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,2,playerData.BotDifficulty);
+
+        //Punch Rule
+        List<PlayerData> enemies = GetUnFrozenNearbyEnemies(dataRepo,playerData);
         foreach(PlayerData enemy in enemies)
         {
             if (enemy.CurrentPlatform.SecondOfPrefab <= 1 && playerData.CurrentPlatform.SecondOfPrefab>= 2)
@@ -738,13 +755,15 @@ public class SystemFunction
                 OnPunchClicked(dataRepo, playerData);
             }
         }
-
-        if (playerData.CurrentPlatform.SecondOfPrefab <= 1 && IsThereAnyEnemyNear(dataRepo, playerData)&&playerData.IsGrounded)
+        //Jumping (Threat)
+        if (playerData.CurrentPlatform.SecondOfPrefab <= 1 && IsThereAnyEnemyNear(dataRepo, playerData, true))
         {
-            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo, playerData.CurrentPlatform, 2);
+            playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo, playerData.CurrentPlatform, 2, playerData.BotDifficulty);
             OnJumpClicked(dataRepo,playerData);
         }
 
+        //Tile Targeting
+        //Jumping (Movement)
         else
         {
             playerData.TargetMovement = FindHighestTileCenter(dataRepo, playerData.CurrentPlatform);
@@ -752,7 +771,7 @@ public class SystemFunction
                 OnJumpClicked(dataRepo, playerData);
         }
     }
-    public static List<PlayerData> GetUnFrozenNearbyEnemies(DataRepo dataRepo,PlayerData playerData)
+    public static List<PlayerData> GetUnFrozenNearbyEnemies(DataRepo dataRepo,PlayerData playerData,bool differentTile = false)
     {
         List<PlayerData> nearbyEnemies = new List<PlayerData>();
         foreach(PlayerData p in dataRepo.Players)
@@ -760,15 +779,28 @@ public class SystemFunction
             if(p!= playerData)
             {
                 if (Vector3.Distance(p.Player.transform.position, playerData.Player.transform.position) < 1f)
-                    if(!p.IsFrozen)
-                        nearbyEnemies.Add(p);
+                    if (!p.IsFrozen) 
+                    {
+                        if (differentTile)
+                        {
+                            if (p.CurrentPlatform != playerData.CurrentPlatform)
+                            {
+                                nearbyEnemies.Add(p);
+                            }
+                        }
+                        else
+                        {
+                            nearbyEnemies.Add(p);
+                        }
+                    }
+                        
             }
         }
         return nearbyEnemies;
     }
-    public static bool IsThereAnyEnemyNear(DataRepo dataRepo,PlayerData playerData)
+    public static bool IsThereAnyEnemyNear(DataRepo dataRepo,PlayerData playerData,bool differentTile = false)
     {
-        if(GetUnFrozenNearbyEnemies(dataRepo, playerData).Count>0)
+        if(GetUnFrozenNearbyEnemies(dataRepo, playerData,differentTile).Count>0)
             return true;
         return false;
     }
@@ -844,21 +876,41 @@ public class SystemFunction
     //Hard Bot : Jumping(Threat)
     //Easy Bot : Tile Escape Rule
     //Hard Bot : Tile Escape Rule
-    public static Vector3 FindDifferenttileBiggerThanValue(DataRepo dataRepo, Platform currentPlatform,int value)
+    public static Vector3 FindDifferenttileBiggerThanValue(DataRepo dataRepo, Platform currentPlatform,int value,BotDifficulty botDifficulty)
     {
         foreach (PlatformData p in dataRepo.Platforms)
         {
             if (p.platform.SecondOfPrefab >= value && p.platform.gameObject != currentPlatform.gameObject)
             {
-                ///////////// if easy bot random on p 
-                return p.platform.transform.position;
+                if(botDifficulty == BotDifficulty.Easy)
+                {
+                    Transform t = p.platform.transform;
+
+                    // Use scale as bounds (assumes platform is centered at origin in local space)
+                    Vector3 scale = t.localScale;
+
+                    // Generate a random local position within the scaled bounds (X-Z plane)
+                    float randomX = Random.Range(-0.5f * scale.x, 0.5f * scale.x);
+                    float randomZ = Random.Range(-0.5f * scale.z, 0.5f * scale.z);
+
+                    // Assuming platform is flat on the Y axis (like a floor), Y is constant
+                    Vector3 localOffset = new Vector3(randomX, t.position.y, randomZ);
+
+                    // Convert local offset to world space
+                    Vector3 randomWorldPosition = t.TransformPoint(localOffset);
+                    return randomWorldPosition;
+                }
+                else
+                {
+                    return p.platform.transform.position;
+                }
             }
         }
         return Vector3.zero;
     }
 
     //Medium Bot: Player Proximity
-    public static Vector3 FindOneNearByTile(DataRepo dataRepo,Platform currentPlatform) 
+    public static Vector3 FindOneNearByEmptyTile(DataRepo dataRepo,Platform currentPlatform) 
     {
         Dictionary<PlatformData, float> distances = new Dictionary<PlatformData, float>();
 
@@ -872,6 +924,16 @@ public class SystemFunction
         // Sort by distance (ascending)
         var sorted = distances.OrderBy(pair => pair.Value);
 
+        foreach(var d in distances)
+        {
+            foreach(PlayerData p in dataRepo.Players)
+            {
+                if(p.CurrentPlatform == d.Key.platform)
+                {
+                    distances.Remove(d.Key);
+                }
+            }
+        }
         // Get the nearest one, if any
         PlatformData nearest = sorted.FirstOrDefault().Key;
 
