@@ -439,7 +439,7 @@ public class SystemFunction
             {
                 Move(dataRepo, p, direction);
             }
-            if (!p.IsMainPlayer && !p.PauseMovement)
+            if (!p.IsMainPlayer && !p.PauseMovement&& Vector3.Distance( p.TargetMovement,Vector3.zero)>0.1f)
                 Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
             if (p.ShouldJump && !p.PauseMovement)
             {
@@ -690,6 +690,7 @@ public class SystemFunction
         {
             yield return new WaitForSeconds(0.5f);
             OnPunchClicked(dataRepo,playerData);
+
         }
         //Tile Targeting
         else
@@ -705,22 +706,32 @@ public class SystemFunction
         }
         //Tile Escape Rule
         if (playerData.CurrentPlatform.SecondOfPrefab == 0)
+        {
             playerData.TargetMovement = FindNearestTilePosBiggerThanCurrent(dataRepo,playerData.CurrentPlatform);
 
+        }
+
         //player Proximity
-        if (IsThereAnyEnemyNear(dataRepo, playerData,true))
+        if (IsThereAnyEnemyNear(dataRepo, playerData, true))
+        {
             playerData.TargetMovement = FindOneNearByEmptyTile(dataRepo,playerData.CurrentPlatform);
 
+        }
+
         //Punch Rule
-        if (IsThereAnyEnemyNear(dataRepo, playerData,true))
+        if (IsThereAnyEnemyNear(dataRepo, playerData, true))
+        {
             OnPunchClicked(dataRepo,playerData);
+        
+        }
 
         //Jumping (Threat)
         if (playerData.CurrentPlatform.SecondOfPrefab == 0 && IsThereAnyEnemyNear(dataRepo, playerData, true))
 
         {
             playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,1,playerData.BotDifficulty);
-            OnJumpClicked(dataRepo,playerData);
+            if (Vector3.Distance(playerData.TargetMovement, playerData.Player.transform.position) > 0.1f)
+                OnJumpClicked(dataRepo,playerData);
         }
         //Tile Targeting
         //Jumping (Movement)
@@ -728,7 +739,8 @@ public class SystemFunction
         {
             playerData.TargetMovement = FindAnyTileBiggerThanCurrentIncludingEdge(dataRepo,playerData.CurrentPlatform);
             if (IsThereChance(15))
-                OnJumpClicked(dataRepo, playerData);
+                if (Vector3.Distance(playerData.TargetMovement, playerData.Player.transform.position) > 0.1f)
+                    OnJumpClicked(dataRepo, playerData);
         }
 
     }
@@ -739,12 +751,20 @@ public class SystemFunction
             return;
         }
         //Tile Escape Rule
-        if (playerData.CurrentPlatform.SecondOfPrefab <= 1)
+        if (playerData.CurrentPlatform.SecondOfPrefab <= 1) 
+        {
+            Debug.Log("Tile escape");
             playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,2,playerData.BotDifficulty);
+            
+        }
 
         //Player Proximity
-        if (IsThereAnyEnemyNear(dataRepo,playerData,false))
+        if (IsThereAnyEnemyNear(dataRepo, playerData, false))
+        {
+            Debug.Log("escape enemy");
             playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,2,playerData.BotDifficulty);
+
+        }
 
         //Punch Rule
         List<PlayerData> enemies = GetUnFrozenNearbyEnemies(dataRepo,playerData);
@@ -752,23 +772,28 @@ public class SystemFunction
         {
             if (enemy.CurrentPlatform.SecondOfPrefab <= 1 && playerData.CurrentPlatform.SecondOfPrefab>= 2)
             {
+                Debug.Log("punch");
                 OnPunchClicked(dataRepo, playerData);
             }
         }
         //Jumping (Threat)
         if (playerData.CurrentPlatform.SecondOfPrefab <= 1 && IsThereAnyEnemyNear(dataRepo, playerData, true))
         {
+            Debug.Log("Jump Threat");
             playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo, playerData.CurrentPlatform, 2, playerData.BotDifficulty);
-            OnJumpClicked(dataRepo,playerData);
+            if(Vector3.Distance(playerData.TargetMovement, playerData.Player.transform.position) >0.1f)
+                OnJumpClicked(dataRepo,playerData);
         }
 
         //Tile Targeting
         //Jumping (Movement)
         else
         {
+            Debug.Log("Move");
             playerData.TargetMovement = FindHighestTileCenter(dataRepo, playerData.CurrentPlatform);
             if (IsThereChance(25))
-                OnJumpClicked(dataRepo, playerData);
+                if (Vector3.Distance(playerData.TargetMovement, playerData.Player.transform.position) > 0.1f)
+                    OnJumpClicked(dataRepo, playerData);
         }
     }
     public static List<PlayerData> GetUnFrozenNearbyEnemies(DataRepo dataRepo,PlayerData playerData,bool differentTile = false)
@@ -923,19 +948,20 @@ public class SystemFunction
 
         // Sort by distance (ascending)
         var sorted = distances.OrderBy(pair => pair.Value);
+        Dictionary<PlatformData, float> temp =new Dictionary<PlatformData, float>(sorted);
 
-        foreach(var d in distances)
+        foreach(var d in sorted)
         {
             foreach(PlayerData p in dataRepo.Players)
             {
                 if(p.CurrentPlatform == d.Key.platform)
                 {
-                    distances.Remove(d.Key);
+                    temp.Remove(d.Key);
                 }
             }
         }
         // Get the nearest one, if any
-        PlatformData nearest = sorted.FirstOrDefault().Key;
+        PlatformData nearest = temp.FirstOrDefault().Key;
 
         return nearest.platform.transform.position;
     }
@@ -965,6 +991,7 @@ public class SystemFunction
 
     public static bool IsThereChance(float probability)
     {
+        Random.InitState(System.DateTime.Now.Millisecond);
         float chance = Random.Range(0f, 100f);
 
         if (chance < probability)

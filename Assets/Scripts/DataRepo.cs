@@ -51,7 +51,7 @@ public class PlayerData
     [NonSerialized] public bool ShouldJumpOnCharacter;
     [NonSerialized]public bool ShouldPunch;
     [NonSerialized] public Vector3 PushForce;
-    [NonSerialized] public Vector3 TargetMovement;
+    [NonSerialized] public Vector3 TargetMovement = Vector3.zero;
     [NonSerialized] public bool IsOutfGround = false;
     [NonSerialized] public Platform CurrentPlatform;
 }
