@@ -686,7 +686,7 @@ public class SystemFunction
         }
 
         //Punch Rule
-        if (IsThereAnyEnemyNear(dataRepo, playerData,true) && IsThereChance(25))
+        if (IsThereAnyEnemyNear(dataRepo, playerData) && IsThereChance(25))
         {
             yield return new WaitForSeconds(0.5f);
             OnPunchClicked(dataRepo,playerData);
@@ -719,14 +719,14 @@ public class SystemFunction
         }
 
         //Punch Rule
-        if (IsThereAnyEnemyNear(dataRepo, playerData, true))
+        if (IsThereAnyEnemyNear(dataRepo, playerData))
         {
             OnPunchClicked(dataRepo,playerData);
         
         }
 
         //Jumping (Threat)
-        if (playerData.CurrentPlatform.SecondOfPrefab == 0 && IsThereAnyEnemyNear(dataRepo, playerData, true))
+        if (playerData.CurrentPlatform.SecondOfPrefab == 0 && IsThereAnyEnemyNear(dataRepo, playerData))
 
         {
             playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo,playerData.CurrentPlatform,1,playerData.BotDifficulty);
@@ -777,7 +777,7 @@ public class SystemFunction
             }
         }
         //Jumping (Threat)
-        if (playerData.CurrentPlatform.SecondOfPrefab <= 1 && IsThereAnyEnemyNear(dataRepo, playerData, true))
+        if (playerData.CurrentPlatform.SecondOfPrefab <= 1 && IsThereAnyEnemyNear(dataRepo, playerData))
         {
             Debug.Log("Jump Threat");
             playerData.TargetMovement = FindDifferenttileBiggerThanValue(dataRepo, playerData.CurrentPlatform, 2, playerData.BotDifficulty);
