@@ -39,8 +39,6 @@ public class PlayerData
 
     [NonSerialized] public float DecisionInterval;
     [NonSerialized] public float LastDecisionTime;
-    [NonSerialized] public float SpeedMultiplier;
-    [NonSerialized] public Vector3 MoveDirection;
     [NonSerialized]public bool IsPlayerFalling;
     [NonSerialized] public bool HasBeenRemoved;
     [NonSerialized] public int Rank;

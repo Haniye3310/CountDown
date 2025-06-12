@@ -400,25 +400,15 @@ public class SystemFunction
         if (playerData.IsOutfGround && !playerData.IsPlayerFalling) return;
         direction = direction.normalized;
         direction.y = 0;
-
-        if (Mathf.Approximately(0, direction.magnitude))
+        if (direction != Vector3.zero)
         {
-            playerData.SpeedMultiplier -= Time.deltaTime * 7000;
-        }
-        else
-        {
-            playerData.MoveDirection = direction;
-            playerData.SpeedMultiplier += Time.deltaTime * 7000;
+            playerData.PlayerRigidbody.AddForce
+                                (direction * 9000 * Time.fixedDeltaTime, ForceMode.Force);
             Quaternion targetRotation = Quaternion.LookRotation(direction);
             playerData.PlayerRigidbody.
                 MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
         }
-        Vector3 force = playerData.MoveDirection* playerData.SpeedMultiplier* Time.fixedDeltaTime;
-        playerData.SpeedMultiplier = Mathf.Clamp(playerData.SpeedMultiplier, 0, 6000);
-        playerData.PlayerRigidbody.AddForce
-                    (force, ForceMode.Force);
-
-        if (playerData.MoveDirection.magnitude < 0.2f)
+        if (direction.magnitude < 0.2f)
         {
             playerData.PlayerAnimator.SetFloat("MoveSpeed", 0);
         }
