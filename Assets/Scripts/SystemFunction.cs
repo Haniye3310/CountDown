@@ -413,11 +413,12 @@ public class SystemFunction
             playerData.PlayerRigidbody.
                 MoveRotation(Quaternion.Slerp(playerData.PlayerRigidbody.rotation, targetRotation, Time.fixedDeltaTime * 10f));
         }
+        Vector3 force = playerData.MoveDirection* playerData.SpeedMultiplier* Time.fixedDeltaTime;
         playerData.SpeedMultiplier = Mathf.Clamp(playerData.SpeedMultiplier, 0, 6000);
         playerData.PlayerRigidbody.AddForce
-                    (playerData.MoveDirection * playerData.SpeedMultiplier * Time.fixedDeltaTime, ForceMode.Force);
+                    (force, ForceMode.Force);
 
-        if (playerData.SpeedMultiplier < 0.1f)
+        if (playerData.MoveDirection.magnitude < 0.2f)
         {
             playerData.PlayerAnimator.SetFloat("MoveSpeed", 0);
         }
