@@ -33,6 +33,12 @@ public class SystemFunction
         dataRepo.UIData.ResultPanel.gameObject.SetActive(true);
         dataRepo.UIData.UIPanel.gameObject.SetActive(false);
     }
+    public static IEnumerator DeleteCircleAroundMainChar(DataRepo dataRepo)
+    {
+        yield return new WaitForSeconds(2);
+        dataRepo.GameData.CircleAroundMainCharacter.gameObject.SetActive(false);
+
+    }
     public static bool ShouldFinishGame(DataRepo dataRepo)
     {
         int NumberOfEleminited = 0;

@@ -84,5 +84,5 @@ public class GameData
     public Transform PlatformsParent;
     public Transform GroundTrigger;
     [NonSerialized] public float GroundRadius;
-
+    public GameObject CircleAroundMainCharacter;
 }
