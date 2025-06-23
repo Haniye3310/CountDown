@@ -401,6 +401,7 @@ public class SystemFunction
         }
 
     }
+
     public static void Move(DataRepo dataRepo, PlayerData playerData, Vector3 direction)
     {
         if (playerData.IsOutfGround && !playerData.IsPlayerFalling) return;
@@ -409,7 +410,6 @@ public class SystemFunction
         {
             direction = Vector3.zero;
         }
-        direction = direction.normalized;
         direction.y = 0;
 
         if (direction != Vector3.zero)
