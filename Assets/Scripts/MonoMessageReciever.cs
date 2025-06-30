@@ -51,17 +51,17 @@ public class MonoMessageReciever : MonoBehaviour
         start = true;
         StartCoroutine(SystemFunction.StartTimerOftheGame(DataRepo));
         StartCoroutine(SystemFunction.DeleteCircleAroundMainChar(DataRepo));
-        for (int i = 0; i < DataRepo.Players.Count; i++)
-        {
-            if (!DataRepo.Players[i].IsMainPlayer)
-            {
-                if (DataRepo.Players[i].BotDifficulty == BotDifficulty.Easy) { DataRepo.Players[i].DecisionInterval = 1.5f; }
-                if (DataRepo.Players[i].BotDifficulty == BotDifficulty.Medium) { DataRepo.Players[i].DecisionInterval = 0.6f; }
-                if (DataRepo.Players[i].BotDifficulty == BotDifficulty.Hard) { DataRepo.Players[i].DecisionInterval = 0.3f; }
-                StartCoroutine(SystemFunction.StartRobot(this,DataRepo.Players[i], DataRepo));
-            }
-        }
-        StartCoroutine(SystemFunction.CountDown(DataRepo));
+        //for (int i = 0; i < DataRepo.Players.Count; i++)
+        //{
+        //    if (!DataRepo.Players[i].IsMainPlayer)
+        //    {
+        //        if (DataRepo.Players[i].BotDifficulty == BotDifficulty.Easy) { DataRepo.Players[i].DecisionInterval = 1.5f; }
+        //        if (DataRepo.Players[i].BotDifficulty == BotDifficulty.Medium) { DataRepo.Players[i].DecisionInterval = 0.6f; }
+        //        if (DataRepo.Players[i].BotDifficulty == BotDifficulty.Hard) { DataRepo.Players[i].DecisionInterval = 0.3f; }
+        //        StartCoroutine(SystemFunction.StartRobot(this,DataRepo.Players[i], DataRepo));
+        //    }
+        //}
+        //StartCoroutine(SystemFunction.CountDown(DataRepo));
     }
     private void FixedUpdate()
     {

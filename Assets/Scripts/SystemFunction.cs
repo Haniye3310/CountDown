@@ -406,6 +406,8 @@ public class SystemFunction
     {
         if (playerData.IsOutfGround && !playerData.IsPlayerFalling) return;
         float deadZone = 0.2f;
+        if (!playerData.Player.IsMainPlayer)
+            direction = direction.normalized;
         if (direction.magnitude < deadZone)
         {
             direction = Vector3.zero;
@@ -442,8 +444,8 @@ public class SystemFunction
             {
                 Move(dataRepo, p, direction);
             }
-            if (!p.IsMainPlayer && !p.PauseMovement&& Vector3.Distance( p.TargetMovement,Vector3.zero)>0.1f)
-                Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
+            //if (!p.IsMainPlayer && !p.PauseMovement&& Vector3.Distance( p.TargetMovement,Vector3.zero)>0.1f)
+            //    Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
             if (p.ShouldJump && !p.PauseMovement)
             {
                 Jump(dataRepo, p);
