@@ -450,8 +450,8 @@ public class SystemFunction
             {
                 Move(dataRepo, p, direction);
             }
-            //if (!p.IsMainPlayer && !p.PauseMovement&& Vector3.Distance( p.TargetMovement,Vector3.zero)>0.1f)
-            //    Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
+            if (!p.IsMainPlayer && !p.PauseMovement && Vector3.Distance(p.TargetMovement, Vector3.zero) > 0.1f)
+                Move(dataRepo, p, (p.TargetMovement - p.Player.transform.position));
             if (p.ShouldJump && !p.PauseMovement)
             {
                 Jump(dataRepo, p);
