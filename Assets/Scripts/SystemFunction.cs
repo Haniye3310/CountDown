@@ -50,6 +50,12 @@ public class SystemFunction
                 NumberOfEleminited++;
             }
         }
+        foreach(PlayerData p in dataRepo.Players)
+        {
+            if(p.IsMainPlayer)
+                if (p.HasBeenRemoved)
+                    return true;
+        }
         if(NumberOfEleminited == 4)
         {
             return true;
