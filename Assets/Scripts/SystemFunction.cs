@@ -406,7 +406,7 @@ public class SystemFunction
     {
         if (playerData.IsOutfGround && !playerData.IsPlayerFalling) return;
         float deadZone = 0.2f;
-        if (!playerData.Player.IsMainPlayer)
+        if (!playerData.IsMainPlayer)
             direction = direction.normalized;
         if (direction.magnitude < deadZone)
         {
