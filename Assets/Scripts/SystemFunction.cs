@@ -461,7 +461,7 @@ public class SystemFunction
                 AttemptPunch(mono,dataRepo, p);
                 p.ShouldPunch = false;
             }
-            if (p.ShouldJumpOnCharacter && !p.IsPlayerFalling)
+            if (p.ShouldJumpOnCharacter && !p.IsPlayerFalling && !p.IsMainPlayer)
             {
                 JumpOnCharacter(dataRepo, p);
             }
