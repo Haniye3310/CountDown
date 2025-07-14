@@ -630,8 +630,7 @@ public class SystemFunction
     public static void Jump(DataRepo dataRepo, PlayerData playerData)
     {
 
-        if (playerData.IsGrounded && !playerData.IsPlayerFalling)
-        {
+
             playerData.JumpVFX.Play();
             Ray ray = new Ray(playerData.Player.transform.position, Vector3.down);
             if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
@@ -640,11 +639,12 @@ public class SystemFunction
             }
             playerData.PlayerRigidbody.AddForce(Vector3.up * 10, ForceMode.Impulse);
             playerData.ShouldJump = false;
-        }
+        
     }
     public static void OnJumpClicked(DataRepo dataRepo, PlayerData playerData)
     {
-        playerData.ShouldJump = true;
+        if (playerData.IsGrounded && !playerData.PauseMovement && !playerData.IsPlayerFalling)
+            playerData.ShouldJump = true;
 
     }
     public static void ApplyPush(Vector3 pushDirection, float forceAmount, PlayerData playerData)

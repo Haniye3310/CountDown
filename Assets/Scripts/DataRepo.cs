@@ -32,7 +32,6 @@ public class PlayerData
     public Animator PlayerAnimator;
     public Rigidbody PlayerRigidbody;
     public float Strength;
-    public Text DebugText;
     public ParticleSystem JumpVFX;
     public ParticleSystem PunchVFX;
     public BotDifficulty BotDifficulty;

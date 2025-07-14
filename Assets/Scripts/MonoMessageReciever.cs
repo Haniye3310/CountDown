@@ -72,6 +72,10 @@ public class MonoMessageReciever : MonoBehaviour
     {
         if (start)
             SystemFunction.Update(DataRepo);
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            OnJumpClicked();
+        }
     }
     public void OnJumpClicked()
     {
