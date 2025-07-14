@@ -547,7 +547,7 @@ public class SystemFunction
 
         playerData.IsFrozen = true;
         playerData.PauseMovement = true;
-        float EndTimer = Time.time + 1.5f;
+        float EndTimer = Time.time + 1f;
         float interval = Time.time + 0.01f;
         float endPausing = Time.time + 0.5f;
 
