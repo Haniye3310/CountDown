@@ -55,7 +55,7 @@ public class PlayerData
 [Serializable]
 public class UIData
 {
-    public FixedJoystick Joystick;
+    public FloatingJoystick Joystick;
     public TextMeshProUGUI RemainingTimeText;
     public GameObject UIPanel;
     public GameObject ResultPanel;
