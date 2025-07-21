@@ -20,7 +20,19 @@ public class MonoMessageReciever : MonoBehaviour
             Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, 25, 0.1f);
             yield return null;
         }
-
+        bool areAllCharactersOnTheGround = false;
+        while (!areAllCharactersOnTheGround)
+        {
+            areAllCharactersOnTheGround = true;
+            foreach (PlayerData p in DataRepo.Players)
+            {
+                if (!p.IsGrounded)
+                    areAllCharactersOnTheGround = false;
+            }
+            yield return null;
+        }
+        DataRepo.GameData.CircleAroundMainCharacter.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2);
         DataRepo.UIData.StartCountDownTimer.gameObject.SetActive(true);
         float remaingStartTime = 4;
         while (remaingStartTime > 0)
