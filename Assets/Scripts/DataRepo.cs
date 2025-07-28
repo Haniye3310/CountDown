@@ -69,6 +69,7 @@ public class UIData
     public Sprite ThirdPlayerSprite;
     public Sprite ForthPlayerSprite;
     public Image ResultBG;
+    public Image FakeJoyStickFirstTime;
 }
 [Serializable]
 public class GameData

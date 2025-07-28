@@ -496,6 +496,11 @@ public class SystemFunction
     }
     public static void Update(DataRepo dataRepo)
     {
+        if ((Input.touchCount > 0 || Input.GetMouseButtonDown(0)))
+        {
+
+            dataRepo.UIData.FakeJoyStickFirstTime.gameObject.SetActive(false); // Hide the image
+        }
         //Ranking the players
         foreach (PlayerData playerData in dataRepo.Players)
         {
