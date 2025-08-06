@@ -36,7 +36,8 @@ public class PlayerData
     public ParticleSystem JumpVFX;
     public ParticleSystem PunchVFX;
     public BotDifficulty BotDifficulty;
-    public AudioSource FallAudiSource;
+    public AudioSource FallAudioSource;
+    public AudioSource JumpAudioSource;
     [NonSerialized] public float DecisionInterval;
     [NonSerialized] public float LastDecisionTime;
     [NonSerialized]public bool IsPlayerFalling;

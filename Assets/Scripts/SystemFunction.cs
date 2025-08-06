@@ -288,7 +288,7 @@ public class SystemFunction
                     if (platformData.IsInAnimatorOpen)
                     {
                         playerData.IsPlayerFalling = true;
-                        playerData.FallAudiSource.Play();
+                        playerData.FallAudioSource.Play();
                         Vector3 dir = (platformData.platform.transform.position - playerData.Player.transform.position).normalized;
                         dir.y = 0;
                         playerData.PlayerRigidbody
@@ -399,7 +399,7 @@ public class SystemFunction
                     if (platformData.IsInAnimatorOpen)
                     {
                         playerData.IsPlayerFalling = true;
-                        playerData.FallAudiSource.Play();
+                        playerData.FallAudioSource.Play();
                         Vector3 dir = (platformData.platform.transform.position - playerData.Player.transform.position).normalized;
                         dir.y = 0;
                         playerData.PlayerRigidbody
@@ -638,16 +638,16 @@ public class SystemFunction
     public static void Jump(DataRepo dataRepo, PlayerData playerData)
     {
 
+        playerData.JumpAudioSource.Play();
+        playerData.JumpVFX.Play();
+        Ray ray = new Ray(playerData.Player.transform.position, Vector3.down);
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
+        {
+            playerData.JumpVFX.transform.position = hit.point + Vector3.up * 0.01f; // Slightly above the ground
+        }
+        playerData.PlayerRigidbody.AddForce(Vector3.up * 10, ForceMode.Impulse);
+        playerData.ShouldJump = false;
 
-            playerData.JumpVFX.Play();
-            Ray ray = new Ray(playerData.Player.transform.position, Vector3.down);
-            if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, LayerMask.GetMask("Ground")))
-            {
-                playerData.JumpVFX.transform.position = hit.point + Vector3.up * 0.01f; // Slightly above the ground
-            }
-            playerData.PlayerRigidbody.AddForce(Vector3.up * 10, ForceMode.Impulse);
-            playerData.ShouldJump = false;
-        
     }
     public static void OnJumpClicked(DataRepo dataRepo, PlayerData playerData)
     {
