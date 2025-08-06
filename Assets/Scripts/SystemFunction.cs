@@ -583,6 +583,7 @@ public class SystemFunction
     }
     public static void AttemptPunch(MonoBehaviour mono,DataRepo dataRepo, PlayerData playerData)
     {
+        playerData.SlapAudioSource.Play();
         Vector3 punchOrigin = playerData.Player.transform.position;
         Vector3 punchDirection = playerData.Player.transform.forward;
 

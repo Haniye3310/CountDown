@@ -38,6 +38,7 @@ public class PlayerData
     public BotDifficulty BotDifficulty;
     public AudioSource FallAudioSource;
     public AudioSource JumpAudioSource;
+    public AudioSource SlapAudioSource;
     [NonSerialized] public float DecisionInterval;
     [NonSerialized] public float LastDecisionTime;
     [NonSerialized]public bool IsPlayerFalling;
