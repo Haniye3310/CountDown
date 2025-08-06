@@ -10,6 +10,7 @@ public class DataRepo : MonoBehaviour
     public List<PlayerData> Players;
     public UIData UIData;
     public GameData GameData;
+    public AudioData AudioData;
     [NonSerialized]public List<PlatformData> Platforms = new List<PlatformData>();
 
 }
@@ -85,4 +86,11 @@ public class GameData
     public Transform GroundTrigger;
     [NonSerialized] public float GroundRadius;
     public GameObject CircleAroundMainCharacter;
+}
+[Serializable]
+public class AudioData
+{
+    public AudioSource CameraAudioSource;
+    public AudioClip GameSound;
+    public AudioClip CountDownSound;
 }

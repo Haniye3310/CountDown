@@ -35,6 +35,8 @@ public class MonoMessageReciever : MonoBehaviour
         yield return new WaitForSeconds(2);
         DataRepo.UIData.StartCountDownTimer.gameObject.SetActive(true);
         float remaingStartTime = 4;
+        DataRepo.AudioData.CameraAudioSource.clip = DataRepo.AudioData.CountDownSound;
+        DataRepo.AudioData.CameraAudioSource.Play();
         while (remaingStartTime > 0)
         {
             remaingStartTime -= Time.deltaTime;
@@ -57,6 +59,9 @@ public class MonoMessageReciever : MonoBehaviour
             }
             yield return null;
         };
+        DataRepo.AudioData.CameraAudioSource.clip = DataRepo.AudioData.GameSound;
+        DataRepo.AudioData.CameraAudioSource.loop = true;
+        DataRepo.AudioData.CameraAudioSource.Play();
         DataRepo.GameData.GroundRadius = DataRepo.GameData.GroundTrigger.localScale.x / 2;
         DataRepo.UIData.GoImage.gameObject.SetActive(false);
         DataRepo.UIData.UIPanel.gameObject.SetActive(true);
