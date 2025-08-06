@@ -229,6 +229,7 @@ public class SystemFunction
             if(p.platform == platform)
             {
                 p.IsInAnimatorOpen = true;
+                dataRepo.AudioData.TileOpeningAudioSource.Play();
             }
         }
     }
