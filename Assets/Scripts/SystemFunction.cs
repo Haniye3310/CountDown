@@ -288,6 +288,7 @@ public class SystemFunction
                     if (platformData.IsInAnimatorOpen)
                     {
                         playerData.IsPlayerFalling = true;
+                        playerData.FallAudiSource.Play();
                         Vector3 dir = (platformData.platform.transform.position - playerData.Player.transform.position).normalized;
                         dir.y = 0;
                         playerData.PlayerRigidbody
@@ -398,6 +399,7 @@ public class SystemFunction
                     if (platformData.IsInAnimatorOpen)
                     {
                         playerData.IsPlayerFalling = true;
+                        playerData.FallAudiSource.Play();
                         Vector3 dir = (platformData.platform.transform.position - playerData.Player.transform.position).normalized;
                         dir.y = 0;
                         playerData.PlayerRigidbody
