@@ -31,7 +31,7 @@ public class MonoMessageReciever : MonoBehaviour
             }
             yield return null;
         }
-        DataRepo.GameData.CircleAroundMainCharacter.gameObject.SetActive(true);
+        DataRepo.GameData.CharacterIndicator.gameObject.SetActive(true);
         yield return new WaitForSeconds(2);
         DataRepo.UIData.StartCountDownTimer.gameObject.SetActive(true);
         float remaingStartTime = 4;

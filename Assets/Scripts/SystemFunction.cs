@@ -36,7 +36,7 @@ public class SystemFunction
     public static IEnumerator DeleteCircleAroundMainChar(DataRepo dataRepo)
     {
         yield return new WaitForSeconds(2);
-        dataRepo.GameData.CircleAroundMainCharacter.gameObject.SetActive(false);
+        dataRepo.GameData.CharacterIndicator.gameObject.SetActive(false);
 
     }
     public static bool ShouldFinishGame(DataRepo dataRepo)
