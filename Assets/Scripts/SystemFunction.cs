@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class SystemFunction
@@ -31,6 +32,7 @@ public class SystemFunction
             }
         }
         dataRepo.UIData.ResultPanel.gameObject.SetActive(true);
+        dataRepo.AudioData.ShowResultAudioSource.Play();
         dataRepo.UIData.UIPanel.gameObject.SetActive(false);
     }
     public static IEnumerator DeleteCircleAroundMainChar(DataRepo dataRepo)
@@ -1019,5 +1021,17 @@ public class SystemFunction
             return true;
         }
         return false;
+    }
+    public static IEnumerator OnRestartClicked(DataRepo dataRepo)
+    {
+        dataRepo.AudioData.RestartAudioSource.Play();
+        yield return new WaitForSeconds(dataRepo.AudioData.RestartAudioSource.clip.length);
+
+        AudioSource[] audios = GameObject.FindObjectsOfType<AudioSource>();
+        foreach (AudioSource a in audios)
+        {
+            a.Stop();
+        }
+        SceneManager.LoadScene("MainScene");
     }
 }

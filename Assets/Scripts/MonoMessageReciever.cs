@@ -120,7 +120,7 @@ public class MonoMessageReciever : MonoBehaviour
     }
     public void OnRestartClicked()
     {
-        SceneManager.LoadScene("MainScene");
+        StartCoroutine(SystemFunction.OnRestartClicked(DataRepo));
     }
     public void OnHomeClicked()
     {

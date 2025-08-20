@@ -96,4 +96,7 @@ public class AudioData
     public AudioSource TileOpeningAudioSource;
     public AudioClip GameSound;
     public AudioClip CountDownSound;
+    public AudioSource ShowResultAudioSource;
+    public AudioSource RestartAudioSource;
+
 }
