@@ -35,12 +35,6 @@ public class SystemFunction
         dataRepo.AudioData.ShowResultAudioSource.Play();
         dataRepo.UIData.UIPanel.gameObject.SetActive(false);
     }
-    public static IEnumerator DeleteCircleAroundMainChar(DataRepo dataRepo)
-    {
-        yield return new WaitForSeconds(2);
-        dataRepo.GameData.CharacterIndicator.gameObject.SetActive(false);
-
-    }
     public static bool ShouldFinishGame(DataRepo dataRepo)
     {
         int NumberOfEleminited = 0;

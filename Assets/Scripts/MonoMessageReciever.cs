@@ -67,7 +67,6 @@ public class MonoMessageReciever : MonoBehaviour
         DataRepo.UIData.UIPanel.gameObject.SetActive(true);
         start = true;
         StartCoroutine(SystemFunction.StartTimerOftheGame(DataRepo));
-        StartCoroutine(SystemFunction.DeleteCircleAroundMainChar(DataRepo));
         StartCoroutine(SystemFunction.CountDown(DataRepo));
         yield return new WaitForSeconds(1f);
         for (int i = 0; i < DataRepo.Players.Count; i++)
