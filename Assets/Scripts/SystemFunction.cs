@@ -149,6 +149,7 @@ public class SystemFunction
 
                                     p.transform.eulerAngles = new Vector3(-90f, 0f, 0f);
                                     dataRepo.Platforms[j].platform = p;
+                                    dataRepo.AudioData.TileCountDown.Play();
                                 }
                             }
                         }
