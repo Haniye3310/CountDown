@@ -755,6 +755,7 @@ public class SystemFunction
         else
         {
             playerData.TargetMovement = FindAnyTileBiggerThanCurrentIncludingEdge(dataRepo,playerData.CurrentPlatform);
+            Debug.DrawRay(playerData.Player.transform.position, playerData.TargetMovement,Color.red);
             if (IsThereChance(15))
                 if (Vector3.Distance(playerData.TargetMovement, playerData.Player.transform.position) > 0.1f)
                     OnJumpClicked(dataRepo, playerData);
@@ -880,18 +881,12 @@ public class SystemFunction
             {
                 Transform t = p.platform.transform;
 
-                // Use scale as bounds (assumes platform is centered at origin in local space)
-                Vector3 scale = t.localScale;
+                Bounds bounds = new Bounds(t.position, t.localScale);
+                float randomX = Random.Range(bounds.min.x, bounds.max.x);
+                float randomZ = Random.Range(bounds.min.z, bounds.max.z);
 
-                // Generate a random local position within the scaled bounds (X-Z plane)
-                float randomX = Random.Range(-0.5f * scale.x, 0.5f * scale.x);
-                float randomZ = Random.Range(-0.5f * scale.z, 0.5f * scale.z);
+                Vector3 randomWorldPosition = new Vector3(randomX, t.position.y, randomZ);
 
-                // Assuming platform is flat on the Y axis (like a floor), Y is constant
-                Vector3 localOffset = new Vector3(randomX, t.position.y, randomZ);
-
-                // Convert local offset to world space
-                Vector3 randomWorldPosition = t.TransformPoint(localOffset);
 
                 return randomWorldPosition;
             }
