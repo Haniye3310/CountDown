@@ -43,7 +43,7 @@ public class PlayerData
     [NonSerialized] public float LastDecisionTime;
     [NonSerialized]public bool IsPlayerFalling;
     [NonSerialized] public bool HasBeenRemoved;
-    [NonSerialized] public int Rank;
+    [NonSerialized] public int Rank=1;
     [NonSerialized] public bool IsFrozen;
     [NonSerialized] public bool PauseMovement = false;
     [NonSerialized] public bool IsGrounded = true;
