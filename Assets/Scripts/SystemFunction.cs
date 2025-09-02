@@ -1,12 +1,88 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
-
 public class SystemFunction
 {
+    public static IEnumerator Start(DataRepo dataRepo,MonoBehaviour mono) 
+    {
+        mono.StartCoroutine( OnNextTutorialClicked(dataRepo));
+        Physics.gravity = new Vector3(0, 0, 0);
+        yield return new WaitUntil(() => dataRepo.GameData.IsTutorialFinished);
+        Physics.gravity = new Vector3(0, -40f, 0);
+        CreateMap(dataRepo);
+        foreach (PlayerData p in dataRepo.Players)
+        {
+            p.PlayerAnimator.SetBool("Grounded", p.IsGrounded);
+        }
+        dataRepo.UIData.UIPanel.gameObject.SetActive(false);
+        while (Mathf.Abs(Camera.main.fieldOfView - 25) > 0.1)
+        {
+            Camera.main.fieldOfView = Mathf.Lerp(Camera.main.fieldOfView, 25, 0.1f);
+            yield return null;
+        }
+        bool areAllCharactersOnTheGround = false;
+        while (!areAllCharactersOnTheGround)
+        {
+            areAllCharactersOnTheGround = true;
+            foreach (PlayerData p in dataRepo.Players)
+            {
+                if (!p.IsGrounded)
+                    areAllCharactersOnTheGround = false;
+            }
+            yield return null;
+        }
+        dataRepo.GameData.CharacterIndicator.gameObject.SetActive(true);
+        yield return new WaitForSeconds(2);
+        dataRepo.UIData.StartCountDownTimer.gameObject.SetActive(true);
+        float remaingStartTime = 4;
+        dataRepo.AudioData.CameraAudioSource.clip = dataRepo.AudioData.CountDownSound;
+        dataRepo.AudioData.CameraAudioSource.Play();
+        while (remaingStartTime > 0)
+        {
+            remaingStartTime -= Time.deltaTime;
+            if (((int)remaingStartTime + 1) == 4)
+            {
+                dataRepo.UIData.StartCountDownTimer.sprite = dataRepo.UIData.NumberThreeSprite;
+            }
+            if (((int)remaingStartTime + 1) == 3)
+            {
+                dataRepo.UIData.StartCountDownTimer.sprite = dataRepo.UIData.NumberTwoSprite;
+            }
+            if (((int)remaingStartTime + 1) == 2)
+            {
+                dataRepo.UIData.StartCountDownTimer.sprite = dataRepo.UIData.NumberOneSprite;
+            }
+            if (((int)remaingStartTime + 1) == 1)
+            {
+                dataRepo.UIData.StartCountDownTimer.gameObject.SetActive(false);
+                dataRepo.UIData.GoImage.gameObject.SetActive(true);
+            }
+            yield return null;
+        };
+        dataRepo.AudioData.CameraAudioSource.clip = dataRepo.AudioData.GameSound;
+        dataRepo.AudioData.CameraAudioSource.loop = true;
+        dataRepo.AudioData.CameraAudioSource.Play();
+        dataRepo.GameData.GroundRadius = dataRepo.GameData.GroundTrigger.localScale.x / 2;
+        dataRepo.UIData.GoImage.gameObject.SetActive(false);
+        dataRepo.UIData.UIPanel.gameObject.SetActive(true);
+        dataRepo.GameData.ShouldGameStart = true;
+        mono.StartCoroutine(StartTimerOftheGame(dataRepo));
+        mono.StartCoroutine(CountDown(dataRepo));
+        yield return new WaitForSeconds(1f);
+        for (int i = 0; i < dataRepo.Players.Count; i++)
+        {
+            if (!dataRepo.Players[i].IsMainPlayer)
+            {
+                if (dataRepo.Players[i].BotDifficulty == BotDifficulty.Easy) { dataRepo.Players[i].DecisionInterval = 1.5f; }
+                if (dataRepo.Players[i].BotDifficulty == BotDifficulty.Medium) { dataRepo.Players[i].DecisionInterval = 0.6f; }
+                if (dataRepo.Players[i].BotDifficulty == BotDifficulty.Hard) { dataRepo.Players[i].DecisionInterval = 0.3f; }
+                mono.StartCoroutine(StartRobot(mono, dataRepo.Players[i], dataRepo));
+            }
+        }
+    }
     public static IEnumerator StartTimerOftheGame(DataRepo dataRepo)
     {
         dataRepo.GameData.RemainingTimeInGame = dataRepo.GameData.TimeOftheGame;
@@ -440,6 +516,7 @@ public class SystemFunction
 
     public static void FixedUpdate(MonoBehaviour mono,DataRepo dataRepo)
     {
+        if (!dataRepo.GameData.ShouldGameStart) return;
         float v = dataRepo.UIData.Joystick.Vertical;
         float h = dataRepo.UIData.Joystick.Horizontal;
 
@@ -496,6 +573,7 @@ public class SystemFunction
     }
     public static void Update(DataRepo dataRepo)
     {
+        if (!dataRepo.GameData.ShouldGameStart) return;
         if ((Input.touchCount > 0 || Input.GetMouseButtonDown(0)))
         {
 
@@ -1023,5 +1101,26 @@ public class SystemFunction
             a.Stop();
         }
         SceneManager.LoadScene("MainScene");
+    }
+    public static IEnumerator OnNextTutorialClicked(DataRepo dataRepo)
+    {
+
+        dataRepo.UIData.NextTutorialButton.gameObject.transform.localScale = new Vector3(0, 0, 0);
+        dataRepo.UIData.NextTutorialButton.gameObject.SetActive(false);
+        if (dataRepo.UIData.TutorialList.Count != dataRepo.GameData.TutorialIndex)
+        {
+            dataRepo.UIData.TutorialList[dataRepo.GameData.TutorialIndex].TutorialPanel.gameObject.SetActive(true);
+            dataRepo.UIData.TutorialList[dataRepo.GameData.TutorialIndex].TutorialText.transform.DOScale(1, 0.5f);
+            dataRepo.GameData.TutorialIndex++;
+            yield return new WaitForSeconds(2);
+            dataRepo.UIData.NextTutorialButton.gameObject.SetActive(true);
+            dataRepo.UIData.NextTutorialButton.gameObject.transform.DOScale(1,0.2f);
+        }
+        else
+        {
+            dataRepo.UIData.TutorialPanel.SetActive(false);
+            dataRepo.GameData.IsTutorialFinished = true;
+        }
+
     }
 }

@@ -73,10 +73,20 @@ public class UIData
     public Sprite ForthPlayerSprite;
     public Image ResultBG;
     public Image FakeJoyStickFirstTime;
+    public List<TutorialPageInfo> TutorialList;
+    public GameObject TutorialPanel;
+    public Button NextTutorialButton;
+}
+[Serializable]
+public class TutorialPageInfo
+{
+    public TextMeshProUGUI TutorialText;
+    public GameObject TutorialPanel;
 }
 [Serializable]
 public class GameData
 {
+    [NonSerialized] public bool ShouldGameStart;
     [NonSerialized] public bool ShouldStopGame = false;
     [NonSerialized] public float RemainingTimeInGame;
     [NonSerialized] public int TimeOftheGame = 30;
@@ -88,6 +98,8 @@ public class GameData
     public Transform GroundTrigger;
     [NonSerialized] public float GroundRadius;
     public GameObject CharacterIndicator;
+    [NonSerialized]public int TutorialIndex;
+    [NonSerialized] public bool IsTutorialFinished;
 }
 [Serializable]
 public class AudioData
