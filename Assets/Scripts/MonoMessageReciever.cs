@@ -52,8 +52,11 @@ public class MonoMessageReciever : MonoBehaviour
     {
         Application.OpenURL("https://tobi.gg");
     }
+#if Tutorial
+
     public void OnNextTutorialClicked()
     {
         StartCoroutine( SystemFunction.OnNextTutorialClicked(DataRepo));
     }
+#endif
 }

@@ -98,8 +98,10 @@ public class GameData
     public Transform GroundTrigger;
     [NonSerialized] public float GroundRadius;
     public GameObject CharacterIndicator;
+#if Tutorial
     [NonSerialized]public int TutorialIndex;
     [NonSerialized] public bool IsTutorialFinished;
+#endif
 }
 [Serializable]
 public class AudioData

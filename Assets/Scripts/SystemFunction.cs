@@ -8,9 +8,14 @@ public class SystemFunction
 {
     public static IEnumerator Start(DataRepo dataRepo,MonoBehaviour mono) 
     {
+#if Tutorial
         mono.StartCoroutine( OnNextTutorialClicked(dataRepo));
+#endif
         Physics.gravity = new Vector3(0, 0, 0);
+        #if Tutorial
+
         yield return new WaitUntil(() => dataRepo.GameData.IsTutorialFinished);
+#endif
         Physics.gravity = new Vector3(0, -40f, 0);
         CreateMap(dataRepo);
         foreach (PlayerData p in dataRepo.Players)
@@ -1102,6 +1107,8 @@ public class SystemFunction
         }
         SceneManager.LoadScene("MainScene");
     }
+#if Tutorial
+
     public static IEnumerator OnNextTutorialClicked(DataRepo dataRepo)
     {
 
@@ -1123,4 +1130,5 @@ public class SystemFunction
         }
 
     }
+#endif
 }
